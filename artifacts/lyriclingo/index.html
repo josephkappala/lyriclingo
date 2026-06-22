@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LyricLingo — Learn languages through music</title>
+  <meta name="description" content="Search any song, see bilingual lyrics side by side, and tap any line to hear it spoken aloud." />
+  <meta property="og:title" content="LyricLingo" />
+  <meta property="og:description" content="Learn languages through music — bilingual lyrics with text-to-speech." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+</head>
+<body>
+  <header>
+    <h1 class="logo">LyricLingo</h1>
+    <p class="tagline">Learn languages through music</p>
+  </header>
+
+  <main>
+    <section class="search-section">
+      <form id="search-form" role="search">
+        <div class="search-row">
+          <input
+            type="search"
+            id="search-input"
+            placeholder="Search for a song or artist…"
+            autocomplete="off"
+            aria-label="Search for a song or artist"
+          />
+          <button type="submit" aria-label="Search">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </button>
+        </div>
+        <div class="lang-row">
+          <label for="lang-select">Translate to:</label>
+          <select id="lang-select" aria-label="Translation language">
+            <option value="en">English</option>
+            <option value="es">Spanish</option>
+            <option value="fr">French</option>
+            <option value="de">German</option>
+            <option value="it">Italian</option>
+            <option value="pt">Portuguese</option>
+            <option value="ja">Japanese</option>
+            <option value="ko">Korean</option>
+            <option value="hi">Hindi</option>
+          </select>
+        </div>
+      </form>
+    </section>
+
+    <section id="results-section" class="results-section" aria-label="Search results" hidden>
+      <ul id="results-list" role="list"></ul>
+    </section>
+
+    <section id="lyrics-section" class="lyrics-section" hidden aria-label="Lyrics">
+      <div class="song-header">
+        <button id="back-btn" aria-label="Back to results">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <polyline points="15 18 9 12 15 6"/>
+          </svg>
+          Back
+        </button>
+        <div class="song-meta">
+          <img id="song-cover" src="" alt="" width="56" height="56" />
+          <div>
+            <div id="song-title" class="song-title"></div>
+            <div id="song-artist" class="song-artist"></div>
+          </div>
+        </div>
+      </div>
+      <div id="lyrics-list" class="lyrics-list" role="list"></div>
+      <div id="lyrics-loading" class="loading-state" hidden>
+        <div class="spinner" aria-label="Loading lyrics…"></div>
+        <span>Loading lyrics…</span>
+      </div>
+      <div id="lyrics-error" class="error-state" hidden></div>
+    </section>
+
+    <div id="global-loading" class="loading-state" hidden>
+      <div class="spinner"></div>
+      <span>Searching…</span>
+    </div>
+    <div id="global-error" class="error-state" hidden></div>
+  </main>
+
+  <div id="audio-indicator" class="audio-indicator" hidden aria-live="polite">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
+    </svg>
+    Playing…
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>

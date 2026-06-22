@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Features — LyricLingo</title>
+  <meta name="description" content="See LyricLingo's interactive features: tap a line to hear it, Play All mode, and playback speed control." />
+  <meta name="color-scheme" content="dark" />
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/style.css" />
+  <link rel="stylesheet" href="/features.css" />
+</head>
+<body>
+
+  <nav class="nav">
+    <div class="nav-inner">
+      <a class="nav-logo" href="/">LyricLingo</a>
+      <div class="nav-links" role="navigation" aria-label="Main navigation">
+        <a class="nav-link" href="/">Home</a>
+        <a class="nav-link nav-link--active" href="/features.html">Features</a>
+        <a class="nav-link" href="mailto:hello@lyriclingo.com">Contact us</a>
+      </div>
+      <div class="nav-end">
+        <a class="nav-cta" href="/">Try now</a>
+      </div>
+    </div>
+  </nav>
+
+  <main class="fp-main">
+
+    <!-- ── Page hero ── -->
+    <div class="fp-hero">
+      <div class="hero-badge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        Interactive features
+      </div>
+      <h1 class="fp-headline">Learn by Doing,<br><span class="hero-headline-accent">Not Just Reading</span></h1>
+      <p class="fp-sub">Three ways LyricLingo makes language learning active. Try each one live below.</p>
+    </div>
+
+    <!-- ── Feature 01: Tap a Line ── -->
+    <section class="fp-section" aria-labelledby="feat-01-title">
+      <div class="fp-section-meta">
+        <span class="fp-num">01</span>
+        <h2 class="fp-title" id="feat-01-title">Tap Any Line to Hear It</h2>
+        <p class="fp-desc">
+          Every lyric line is interactive. Tap it to hear it spoken aloud in the original
+          language using AI voice synthesis — ideal for pronunciation practice.
+        </p>
+        <div class="fp-tags">
+          <span class="fp-tag">AI Voice</span>
+          <span class="fp-tag">Pronunciation</span>
+          <span class="fp-tag">ElevenLabs</span>
+        </div>
+      </div>
+      <div class="fp-demo">
+        <p class="demo-song-label">♪ Despacito — Luis Fonsi &nbsp;·&nbsp; Try tapping a line</p>
+        <div class="demo-lines" id="demo-tap-lines">
+          <button class="lyric-line" data-text="Despacito, quiero respirar tu cuello despacito" aria-label="Play this line">
+            <div class="lyric-original">Despacito, quiero respirar tu cuello despacito</div>
+            <div class="lyric-translation">Slowly, I want to breathe your neck slowly</div>
+          </button>
+          <button class="lyric-line" data-text="Deja que te diga cosas al oído" aria-label="Play this line">
+            <div class="lyric-original">Deja que te diga cosas al oído</div>
+            <div class="lyric-translation">Let me whisper things in your ear</div>
+          </button>
+          <button class="lyric-line" data-text="Para que te acuerdes si no estás conmigo" aria-label="Play this line">
+            <div class="lyric-original">Para que te acuerdes si no estás conmigo</div>
+            <div class="lyric-translation">So you'll remember when you're not with me</div>
+          </button>
+          <button class="lyric-line" data-text="Pasito a pasito, suave suavecito" aria-label="Play this line">
+            <div class="lyric-original">Pasito a pasito, suave suavecito</div>
+            <div class="lyric-translation">Step by step, slowly and softly</div>
+          </button>
+        </div>
+        <div class="demo-audio-indicator" id="tap-indicator" style="display:none">
+          <span class="demo-sound-wave">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          Playing…
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Feature 02: Play All ── -->
+    <section class="fp-section fp-section--flip" aria-labelledby="feat-02-title">
+      <div class="fp-section-meta">
+        <span class="fp-num">02</span>
+        <h2 class="fp-title" id="feat-02-title">Play All — Guided Listening</h2>
+        <p class="fp-desc">
+          Hit Play All to move through every line automatically, one by one.
+          Great for immersive listening practice while you follow along.
+        </p>
+        <div class="fp-tags">
+          <span class="fp-tag">Auto-sequence</span>
+          <span class="fp-tag">Immersive</span>
+          <span class="fp-tag">Hands-free</span>
+        </div>
+      </div>
+      <div class="fp-demo">
+        <p class="demo-song-label">♪ Despacito — Luis Fonsi &nbsp;·&nbsp; Hit Play All</p>
+        <div class="fp-demo-controls">
+          <button class="ctrl-btn" id="fp-play-all-btn">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>
+            Play All
+          </button>
+          <button class="ctrl-btn" id="fp-stop-btn" style="display:none">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12"/></svg>
+            Stop
+          </button>
+        </div>
+        <div class="demo-lines" id="demo-playall-lines">
+          <button class="lyric-line" data-text="Despacito, quiero respirar tu cuello despacito" aria-label="Play this line">
+            <div class="lyric-original">Despacito, quiero respirar tu cuello despacito</div>
+            <div class="lyric-translation">Slowly, I want to breathe your neck slowly</div>
+          </button>
+          <button class="lyric-line" data-text="Deja que te diga cosas al oído" aria-label="Play this line">
+            <div class="lyric-original">Deja que te diga cosas al oído</div>
+            <div class="lyric-translation">Let me whisper things in your ear</div>
+          </button>
+          <button class="lyric-line" data-text="Para que te acuerdes si no estás conmigo" aria-label="Play this line">
+            <div class="lyric-original">Para que te acuerdes si no estás conmigo</div>
+            <div class="lyric-translation">So you'll remember when you're not with me</div>
+          </button>
+          <button class="lyric-line" data-text="Pasito a pasito, suave suavecito" aria-label="Play this line">
+            <div class="lyric-original">Pasito a pasito, suave suavecito</div>
+            <div class="lyric-translation">Step by step, slowly and softly</div>
+          </button>
+        </div>
+        <div class="demo-audio-indicator" id="playall-indicator" style="display:none">
+          <span class="demo-sound-wave">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          Playing…
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Feature 03: Speed Control ── -->
+    <section class="fp-section" aria-labelledby="feat-03-title">
+      <div class="fp-section-meta">
+        <span class="fp-num">03</span>
+        <h2 class="fp-title" id="feat-03-title">Control Your Pace</h2>
+        <p class="fp-desc">
+          Toggle between normal speed (1×) and a slower pace (0.7×).
+          Tap any line to hear the difference — perfect for catching every syllable.
+        </p>
+        <div class="fp-tags">
+          <span class="fp-tag">Speed control</span>
+          <span class="fp-tag">0.7× slow mode</span>
+          <span class="fp-tag">Learner-friendly</span>
+        </div>
+      </div>
+      <div class="fp-demo">
+        <p class="demo-song-label">♪ Despacito — Luis Fonsi &nbsp;·&nbsp; Change speed, then tap a line</p>
+        <div class="speed-toggle" role="group" aria-label="Playback speed" id="fp-speed-group">
+          <button class="speed-btn active" id="fp-speed-1x" aria-pressed="true">1×  Normal</button>
+          <button class="speed-btn" id="fp-speed-07x" aria-pressed="false">0.7×  Slow</button>
+        </div>
+        <div class="demo-lines" id="demo-speed-lines">
+          <button class="lyric-line" data-text="Despacito, quiero respirar tu cuello despacito" aria-label="Play this line">
+            <div class="lyric-original">Despacito, quiero respirar tu cuello despacito</div>
+            <div class="lyric-translation">Slowly, I want to breathe your neck slowly</div>
+          </button>
+          <button class="lyric-line" data-text="Deja que te diga cosas al oído" aria-label="Play this line">
+            <div class="lyric-original">Deja que te diga cosas al oído</div>
+            <div class="lyric-translation">Let me whisper things in your ear</div>
+          </button>
+          <button class="lyric-line" data-text="Para que te acuerdes si no estás conmigo" aria-label="Play this line">
+            <div class="lyric-original">Para que te acuerdes si no estás conmigo</div>
+            <div class="lyric-translation">So you'll remember when you're not with me</div>
+          </button>
+          <button class="lyric-line" data-text="Pasito a pasito, suave suavecito" aria-label="Play this line">
+            <div class="lyric-original">Pasito a pasito, suave suavecito</div>
+            <div class="lyric-translation">Step by step, slowly and softly</div>
+          </button>
+        </div>
+        <div class="demo-audio-indicator" id="speed-indicator" style="display:none">
+          <span class="demo-sound-wave">
+            <span></span><span></span><span></span><span></span>
+          </span>
+          <span id="speed-indicator-label">Playing at 1×…</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── CTA ── -->
+    <div class="fp-cta-section">
+      <h2 class="fp-cta-heading">Ready to try it with a real song?</h2>
+      <p class="fp-cta-sub">Search any song, pick a language, and start learning.</p>
+      <a href="/" class="fp-cta-btn">Search a song →</a>
+    </div>
+
+  </main>
+
+  <script src="/features.js"></script>
+</body>
+</html>

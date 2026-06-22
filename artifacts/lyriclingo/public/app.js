@@ -21,7 +21,6 @@ const backBtn           = document.getElementById('back-btn');
 const playAllBtn        = document.getElementById('play-all-btn');
 const navLogoBtn        = document.getElementById('nav-logo-btn');
 const navHomeBtn        = document.getElementById('nav-home-btn');
-const navFeaturesBtn    = document.getElementById('nav-features-btn');
 const navCtaBtn         = document.getElementById('nav-cta-btn');
 const songCover         = document.getElementById('song-cover');
 const songTitle         = document.getElementById('song-title');
@@ -80,13 +79,7 @@ function showHome() {
 
 navLogoBtn.addEventListener('click', showHome);
 navHomeBtn.addEventListener('click', showHome);
-navFeaturesBtn.addEventListener('click', () => {
-  showHome();
-  setTimeout(() => {
-    const featSec = document.getElementById('features-section');
-    if (featSec) featSec.scrollIntoView({ behavior: 'smooth', block: 'start' });
-  }, 60);
-});
+
 navCtaBtn.addEventListener('click', () => {
   showHome();
   setTimeout(() => searchInput.focus(), 80);

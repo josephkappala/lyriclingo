@@ -28,6 +28,7 @@ const songArtist        = document.getElementById('song-artist');
 const audioIndicator    = document.getElementById('audio-indicator');
 const speed1xBtn        = document.getElementById('speed-1x-btn');
 const speed07xBtn       = document.getElementById('speed-07x-btn');
+const exampleChips      = document.getElementById('example-chips');
 
 // ── State ──
 let currentAudio    = null;
@@ -66,6 +67,7 @@ function showHome() {
   stopAudio();
   show(heroContent);
   show(featuresSection);
+  show(exampleChips);
   hide(resultsOverlay);
   hide(lyricsSection);
   hide(globalLoading);
@@ -76,6 +78,14 @@ function showHome() {
 }
 
 navLogoBtn.addEventListener('click', showHome);
+
+// ── Example chips ──
+document.querySelectorAll('.chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    searchInput.value = chip.dataset.query;
+    searchForm.requestSubmit();
+  });
+});
 
 // ── Playback speed ──
 
@@ -119,6 +129,7 @@ function renderResults(tracks, query = '') {
   // Collapse hero/features on first search
   hide(heroContent);
   hide(featuresSection);
+  hide(exampleChips);
 
   resultsList.innerHTML = '';
 

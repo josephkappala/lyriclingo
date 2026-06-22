@@ -85,7 +85,7 @@ body {
   font-family: var(--font-title);
   font-size: 1.2rem;
   font-weight: 700;
-  color: var(--amber);
+  color: #e8eaf6;
   letter-spacing: -0.01em;
   padding: 0;
   line-height: 1;

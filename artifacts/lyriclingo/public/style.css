@@ -430,7 +430,7 @@ main {
   font-weight: 600;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  color: var(--muted);
+  color: rgba(200, 210, 240, 0.60);
   text-align: center;
   margin-bottom: 0.875rem;
 }
@@ -443,8 +443,8 @@ main {
 }
 
 .track-item {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.08);
+  background: rgba(8, 14, 38, 0.70);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: var(--radius);
   display: flex;
   align-items: center;
@@ -454,12 +454,14 @@ main {
   transition: background var(--ease), border-color var(--ease), transform var(--ease), box-shadow var(--ease);
   width: 100%;
   text-align: left;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .track-item:hover {
-  background: rgba(255, 255, 255, 0.10);
-  border-color: rgba(255, 180, 84, 0.40);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.30);
+  background: rgba(8, 14, 38, 0.85);
+  border-color: rgba(255, 180, 84, 0.45);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
   transform: translateY(-1px);
 }
 
@@ -496,7 +498,7 @@ main {
 }
 
 .track-artist {
-  color: var(--muted);
+  color: rgba(200, 210, 240, 0.70);
   font-size: 0.78rem;
   white-space: nowrap;
   overflow: hidden;

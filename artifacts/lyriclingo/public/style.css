@@ -9,7 +9,6 @@
   --border: #27273a;
   --amber: #ffb454;
   --amber-dim: #c88830;
-  --amber-glow: rgba(255, 180, 84, 0.15);
   --text: #e8e8f0;
   --muted: #7a7a8e;
   --danger: #ff6b6b;
@@ -102,8 +101,8 @@ main {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  background: color-mix(in srgb, var(--amber) 10%, transparent);
-  border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+  background: rgba(255, 180, 84, 0.10);
+  border: 1px solid rgba(255, 180, 84, 0.30);
   color: var(--amber);
   border-radius: 100px;
   padding: 0.3rem 0.9rem;
@@ -248,15 +247,15 @@ main {
 }
 
 .feature-card:hover {
-  border-color: color-mix(in srgb, var(--amber) 40%, transparent);
+  border-color: rgba(255, 180, 84, 0.40);
   background: var(--surface2);
 }
 
 .feature-icon {
   width: 40px;
   height: 40px;
-  background: color-mix(in srgb, var(--amber) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--amber) 25%, transparent);
+  background: rgba(255, 180, 84, 0.12);
+  border: 1px solid rgba(255, 180, 84, 0.25);
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -395,16 +394,17 @@ main {
   font-family: var(--font-body);
   font-size: 0.85rem;
   padding: 0.4rem 0.85rem;
-  transition: color var(--transition), border-color var(--transition), background var(--transition);
+  transition: color var(--transition), border-color var(--transition), background var(--transition), opacity var(--transition);
 }
 
-#play-all-btn:hover { color: var(--amber); border-color: var(--amber); }
+#play-all-btn:hover:not(:disabled) { color: var(--amber); border-color: var(--amber); }
 #play-all-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+#play-all-btn:disabled { opacity: 0.35; cursor: not-allowed; }
 
 #play-all-btn.playing {
   color: var(--amber);
   border-color: var(--amber-dim);
-  background: color-mix(in srgb, var(--amber) 10%, transparent);
+  background: rgba(255, 180, 84, 0.10);
 }
 
 .song-meta {
@@ -443,7 +443,7 @@ main {
   border-radius: 8px;
   cursor: pointer;
   padding: 0.6rem 0.875rem;
-  transition: background var(--transition);
+  transition: background var(--transition), border-color var(--transition);
   border: 1.5px solid transparent;
 }
 
@@ -457,14 +457,16 @@ main {
   outline-offset: 2px;
 }
 
+/* fetching audio — warm amber tint */
 .lyric-line.active {
-  background: color-mix(in srgb, var(--amber) 12%, transparent);
-  border-color: color-mix(in srgb, var(--amber) 40%, transparent);
+  background: rgba(255, 180, 84, 0.10);
+  border-color: rgba(255, 180, 84, 0.35);
 }
 
+/* audio playing — brighter highlight */
 .lyric-line.playing {
-  background: color-mix(in srgb, var(--amber) 20%, transparent);
-  border-color: var(--amber-dim);
+  background: rgba(255, 180, 84, 0.18);
+  border-color: rgba(255, 180, 84, 0.60);
 }
 
 .synced-badge {
@@ -474,8 +476,8 @@ main {
   font-size: 0.75rem;
   font-weight: 500;
   color: var(--amber);
-  background: color-mix(in srgb, var(--amber) 12%, transparent);
-  border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+  background: rgba(255, 180, 84, 0.10);
+  border: 1px solid rgba(255, 180, 84, 0.28);
   border-radius: 100px;
   padding: 0.25rem 0.65rem;
   margin-bottom: 0.75rem;
@@ -523,8 +525,8 @@ main {
   padding: 1.5rem;
   color: var(--danger);
   font-size: 0.9rem;
-  background: color-mix(in srgb, var(--danger) 8%, transparent);
-  border: 1.5px solid color-mix(in srgb, var(--danger) 30%, transparent);
+  background: rgba(255, 107, 107, 0.08);
+  border: 1.5px solid rgba(255, 107, 107, 0.30);
   border-radius: var(--radius);
   margin-top: 0.5rem;
 }
@@ -551,15 +553,6 @@ main {
 @keyframes fadeUp {
   from { opacity: 0; transform: translateY(6px); }
   to   { opacity: 1; transform: none; }
-}
-
-/* ── Results section header ── */
-.results-header {
-  font-size: 0.8rem;
-  color: var(--muted);
-  font-weight: 500;
-  margin-bottom: 0.75rem;
-  padding: 0 0.25rem;
 }
 
 /* ── Reduced motion ── */

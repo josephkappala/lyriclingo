@@ -141,6 +141,7 @@ async function loadLyrics(track) {
   hide(resultsSection);
   lyricsList.innerHTML = '';
   lineEls = [];
+  playAllBtn.disabled = true;
   hide(lyricsError);
   show(lyricsLoading);
   show(lyricsSection);
@@ -174,9 +175,11 @@ async function loadLyrics(track) {
 
     hide(lyricsLoading);
     renderLyrics(lyricsData.lines, translationLines, lyricsData.synced);
+    playAllBtn.disabled = false;
   } catch (err) {
     hide(lyricsLoading);
     showError(lyricsError, `Could not load lyrics: ${err.message}`);
+    playAllBtn.disabled = false;
   }
 }
 
@@ -356,6 +359,8 @@ async function playAll() {
     if (playAllSession !== session) break;
 
     const { el, text } = lineEls[i];
+    if (!text.trim()) continue;   // skip blank / section-header lines
+
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
 
     await playLineForChain(el, text, session);

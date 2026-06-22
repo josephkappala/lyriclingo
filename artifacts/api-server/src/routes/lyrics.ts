@@ -128,28 +128,52 @@ router.get("/lyrics", async (req, res) => {
   }
 });
 
-// GET /api/translate?track_id=&lang=
-router.get("/translate", async (req, res) => {
+// POST /api/translate  { lines: string[], from?: string, to: string }
+router.post("/translate", async (req, res) => {
   try {
-    const track_id = String(req.query["track_id"] ?? "");
-    const lang = String(req.query["lang"] ?? "en");
+    const { lines, from = "autodetect", to = "en" } = req.body as {
+      lines?: string[];
+      from?: string;
+      to?: string;
+    };
 
-    try {
-      const body = (await mmFetch("track.lyrics.translation.get", {
-        track_id,
-        selected_language: lang,
-        min_completed: "0.4",
-      })) as { lyrics: { lyrics_body: string } };
-
-      const raw = body.lyrics.lyrics_body ?? "";
-      const lines = raw.split("\n").map((l) => l.trim()).filter(Boolean);
-      res.json({ lines });
-    } catch {
+    if (!Array.isArray(lines) || lines.length === 0) {
       res.json({ lines: [] });
+      return;
     }
+
+    // Translate in chunks to stay within MyMemory's 5000-char limit
+    const SEPARATOR = "\n||||\n";
+    const translated: string[] = [];
+    let chunk: string[] = [];
+    let chunkLen = 0;
+
+    const translateChunk = async (batch: string[]): Promise<string[]> => {
+      const joined = batch.join(SEPARATOR);
+      const langpair = `${from}|${to}`;
+      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=${encodeURIComponent(langpair)}`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
+      const json = (await r.json()) as { responseStatus: number; responseData: { translatedText: string } };
+      if (json.responseStatus !== 200) return batch; // fallback to original
+      return json.responseData.translatedText.split("||||").map((s) => s.replace(/^\n+|\n+$/g, "").trim());
+    };
+
+    for (const line of lines) {
+      const lineLen = line.length + SEPARATOR.length;
+      if (chunkLen + lineLen > 4800 && chunk.length > 0) {
+        translated.push(...(await translateChunk(chunk)));
+        chunk = [];
+        chunkLen = 0;
+      }
+      chunk.push(line);
+      chunkLen += lineLen;
+    }
+    if (chunk.length > 0) translated.push(...(await translateChunk(chunk)));
+
+    res.json({ lines: translated });
   } catch (err) {
     req.log.error(err);
-    res.status(502).json({ error: "Translation fetch failed" });
+    res.status(502).json({ error: "Translation failed" });
   }
 });
 

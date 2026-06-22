@@ -118,13 +118,27 @@ async function loadLyrics(track) {
 
   try {
     const lang = langSelect.value;
-    const [lyricsData, translationData] = await Promise.all([
-      apiFetch(`/lyrics?track_id=${track.id}`),
-      apiFetch(`/translate?track_id=${track.id}&lang=${lang}`).catch(() => ({ lines: [] })),
-    ]);
+    const lyricsData = await apiFetch(`/lyrics?track_id=${track.id}`);
+
+    // Translate using the original line texts
+    const origTexts = (lyricsData.lines || []).map((l) => l.text);
+    let translationLines = [];
+    if (origTexts.length && lang) {
+      try {
+        const tRes = await fetch(`${BASE}/translate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ lines: origTexts, to: lang }),
+        });
+        if (tRes.ok) {
+          const tData = await tRes.json();
+          translationLines = tData.lines || [];
+        }
+      } catch { /* show lyrics without translation */ }
+    }
 
     hide(lyricsLoading);
-    renderLyrics(lyricsData.lines, translationData.lines || []);
+    renderLyrics(lyricsData.lines, translationLines);
   } catch (err) {
     hide(lyricsLoading);
     showError(lyricsError, `Could not load lyrics: ${err.message}`);

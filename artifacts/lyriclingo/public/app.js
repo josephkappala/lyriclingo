@@ -23,6 +23,7 @@ const audioIndicator = document.getElementById('audio-indicator');
 let currentAudio = null;
 let currentTrack = null;
 let playingLine = null;
+let currentOrigLines = [];  // cache for re-translation on lang change
 
 // ── Utilities ──
 
@@ -104,9 +105,10 @@ function renderResults(tracks) {
 async function loadLyrics(track) {
   stopAudio();
   currentTrack = track;
+  currentOrigLines = [];
 
   songCover.src = track.cover || '';
-  songCover.hidden = !track.cover;
+  songCover.style.display = track.cover ? '' : 'none';
   songTitle.textContent = track.title;
   songArtist.textContent = track.artist;
 
@@ -117,40 +119,64 @@ async function loadLyrics(track) {
   show(lyricsSection);
 
   try {
-    const lang = langSelect.value;
     const lyricsData = await apiFetch(`/lyrics?track_id=${track.id}`);
+    currentOrigLines = lyricsData.lines || [];
 
-    // Translate using the original line texts
-    const origTexts = (lyricsData.lines || []).map((l) => l.text);
-    let translationLines = [];
-    if (origTexts.length && lang) {
-      try {
-        const tRes = await fetch(`${BASE}/translate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ lines: origTexts, to: lang }),
-        });
-        if (tRes.ok) {
-          const tData = await tRes.json();
-          translationLines = tData.lines || [];
-        }
-      } catch { /* show lyrics without translation */ }
-    }
+    const translationLines = await translateLines(currentOrigLines.map((l) => l.text));
 
     hide(lyricsLoading);
-    renderLyrics(lyricsData.lines, translationLines);
+    renderLyrics(currentOrigLines, translationLines, lyricsData.synced);
   } catch (err) {
     hide(lyricsLoading);
     showError(lyricsError, `Could not load lyrics: ${err.message}`);
   }
 }
 
-function renderLyrics(origLines, transLines) {
+async function translateLines(texts) {
+  const lang = langSelect.value;
+  if (!texts.length || !lang || lang === 'en') return [];
+  try {
+    const tRes = await fetch(`${BASE}/translate`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ lines: texts, to: lang }),
+    });
+    if (tRes.ok) {
+      const tData = await tRes.json();
+      return tData.lines || [];
+    }
+  } catch { /* fall through */ }
+  return [];
+}
+
+// Re-translate when language changes while lyrics are visible
+langSelect.addEventListener('change', async () => {
+  if (!currentOrigLines.length || lyricsSection.style.display === 'none') return;
+  const translationLines = await translateLines(currentOrigLines.map((l) => l.text));
+  const synced = lyricsList.dataset.synced === 'true';
+  renderLyrics(currentOrigLines, translationLines, synced);
+});
+
+function renderLyrics(origLines, transLines, synced) {
   lyricsList.innerHTML = '';
+  lyricsList.dataset.synced = String(Boolean(synced));
 
   if (!origLines.length) {
     showError(lyricsError, 'No lyrics available for this track.');
     return;
+  }
+
+  // Synced badge
+  if (synced) {
+    const badge = document.createElement('div');
+    badge.className = 'synced-badge';
+    badge.innerHTML = `
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
+      </svg>
+      Time-synced lyrics
+    `;
+    lyricsList.appendChild(badge);
   }
 
   origLines.forEach((line, i) => {
@@ -159,6 +185,7 @@ function renderLyrics(origLines, transLines) {
     div.className = 'lyric-line';
     div.setAttribute('role', 'listitem');
     div.tabIndex = 0;
+    div.title = 'Click to hear this line';
 
     div.innerHTML = `
       <div class="lyric-original">${escHtml(line.text)}</div>
@@ -195,7 +222,10 @@ async function playLine(el, text) {
       body: JSON.stringify({ text }),
     });
 
-    if (!res.ok) throw new Error(`TTS request failed (${res.status})`);
+    if (!res.ok) {
+      const body = await res.json().catch(() => ({}));
+      throw new Error(body.error || `TTS request failed (${res.status})`);
+    }
 
     const blob = await res.blob();
     const url = URL.createObjectURL(blob);
@@ -220,7 +250,8 @@ async function playLine(el, text) {
   } catch (err) {
     el.classList.remove('active', 'playing');
     hide(audioIndicator);
-    console.error('TTS error:', err);
+    showError(globalError, `Audio failed: ${err.message}`);
+    setTimeout(() => hide(globalError), 4000);
   }
 }
 

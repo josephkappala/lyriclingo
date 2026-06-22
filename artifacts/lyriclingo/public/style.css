@@ -279,6 +279,20 @@ main {
   border-color: var(--amber-dim);
 }
 
+.synced-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: var(--amber);
+  background: color-mix(in srgb, var(--amber) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--amber) 30%, transparent);
+  border-radius: 100px;
+  padding: 0.25rem 0.65rem;
+  margin-bottom: 0.75rem;
+}
+
 .lyric-original {
   font-size: 1rem;
   font-weight: 500;

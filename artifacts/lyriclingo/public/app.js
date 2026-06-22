@@ -8,11 +8,9 @@ const searchInput       = document.getElementById('search-input');
 const langSelect        = document.getElementById('lang-select');
 const heroContent       = document.getElementById('hero-content');
 const featuresSection   = document.getElementById('features-section');
-const resultsOverlay    = document.getElementById('results-overlay');
-const resultsModalEl    = document.getElementById('results-modal');
+const resultsSection    = document.getElementById('results-section');
 const resultsList       = document.getElementById('results-list');
 const resultsModalTitle = document.getElementById('results-modal-title');
-const closeResultsBtn   = document.getElementById('close-results-btn');
 const lyricsSection     = document.getElementById('lyrics-section');
 const lyricsList        = document.getElementById('lyrics-list');
 const lyricsLoading     = document.getElementById('lyrics-loading');
@@ -68,7 +66,7 @@ function showHome() {
   show(heroContent);
   show(featuresSection);
   show(exampleChips);
-  hide(resultsOverlay);
+  hide(resultsSection);
   hide(lyricsSection);
   hide(globalLoading);
   hide(globalError);
@@ -110,7 +108,7 @@ searchForm.addEventListener('submit', async (e) => {
   const q = searchInput.value.trim();
   if (!q) return;
 
-  hide(resultsOverlay);
+  hide(resultsSection);
   hide(lyricsSection);
   hide(globalError);
   show(globalLoading);
@@ -162,7 +160,7 @@ function renderResults(tracks, query = '') {
     `;
 
     btn.addEventListener('click', () => {
-      hide(resultsOverlay);
+      hide(resultsSection);
       loadLyrics(track);
     });
 
@@ -170,30 +168,17 @@ function renderResults(tracks, query = '') {
     resultsList.appendChild(li);
   }
 
-  show(resultsOverlay);
-
-  // Move focus into the modal for accessibility
-  closeResultsBtn.focus();
+  show(resultsSection);
+  resultsList.firstElementChild?.querySelector('button')?.focus();
 }
 
-// ── Results overlay close handlers ──
-
-closeResultsBtn.addEventListener('click', showHome);
-
-// Click outside the modal card → close (back to home)
-resultsOverlay.addEventListener('click', (e) => {
-  if (e.target === resultsOverlay) showHome();
-});
-
-// Escape key → close overlay or exit lyrics
+// Escape key → exit lyrics back to results
 document.addEventListener('keydown', (e) => {
   if (e.key !== 'Escape') return;
-  if (resultsOverlay.style.display !== 'none') {
-    showHome();
-  } else if (lyricsSection.style.display !== 'none') {
+  if (lyricsSection.style.display !== 'none') {
     stopAudio();
     hide(lyricsSection);
-    show(resultsOverlay);
+    show(resultsSection);
   }
 });
 
@@ -492,12 +477,12 @@ async function playLineForChain(el, text, session) {
   URL.revokeObjectURL(url);
 }
 
-// ── Back button (lyrics → results popup) ──
+// ── Back button (lyrics → results) ──
 
 backBtn.addEventListener('click', () => {
   stopAudio();
   hide(lyricsSection);
-  show(resultsOverlay);
+  show(resultsSection);
 });
 
 // ── XSS safety ──

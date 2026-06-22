@@ -89,6 +89,12 @@
       </div>
     </div>
 
+    <!-- ── Search results (inline, swaps with "How it works") ── -->
+    <section id="results-section" class="results-section" style="display:none" aria-label="Search results">
+      <p class="results-section-title" id="results-modal-title">Search results</p>
+      <ul id="results-list" role="list"></ul>
+    </section>
+
     <!-- ── Feature cards (hides after first search) ── -->
     <section id="features-section" class="features-section" aria-label="How it works">
       <p class="features-label">How it works</p>
@@ -168,24 +174,6 @@
     <div id="global-error" class="error-state" style="display:none"></div>
 
   </main>
-
-  <!-- ── Results popup overlay (fixed, outside main) ── -->
-  <div id="results-overlay" class="results-overlay" style="display:none" role="dialog" aria-modal="true" aria-label="Search results">
-    <div class="results-modal" id="results-modal">
-      <div class="modal-header">
-        <div class="modal-handle" aria-hidden="true"></div>
-        <span class="modal-title" id="results-modal-title">Results</span>
-        <button id="close-results-btn" class="modal-close-btn" aria-label="Close search results">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
-            <path d="M18 6L6 18M6 6l12 12"/>
-          </svg>
-        </button>
-      </div>
-      <div class="results-scroll">
-        <ul id="results-list" role="list"></ul>
-      </div>
-    </div>
-  </div>
 
   <!-- ── Audio indicator ── -->
   <div id="audio-indicator" class="audio-indicator" style="display:none" aria-live="polite">

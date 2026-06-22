@@ -212,9 +212,9 @@ main {
 
 .hero-sub {
   color: var(--text-sec);
-  font-size: 1.05rem;
+  font-size: clamp(0.78rem, 1.2vw, 0.9rem);
   line-height: 1.65;
-  max-width: 480px;
+  white-space: nowrap;
   margin: 0 auto;
 }
 

@@ -59,16 +59,33 @@ router.get("/search", async (req, res) => {
       page_size: "8",
     })) as { track_list: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string; explicit: number } }[] };
 
-    const tracks = (body.track_list ?? []).map(
-      (t: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string; explicit: number } }) => ({
+    const raw = (body.track_list ?? []).map(
+      (t: { track: { track_id: number; track_name: string; artist_name: string; explicit: number } }) => ({
         id: t.track.track_id,
         title: t.track.track_name,
         artist: t.track.artist_name,
-        cover: t.track.album_coverart_100x100,
         explicit: t.track.explicit === 1,
       }),
     );
-    res.json(tracks);
+
+    // Enrich with cover art from iTunes (free, no key needed) in parallel
+    const enriched = await Promise.all(
+      raw.map(async (track) => {
+        try {
+          const term = encodeURIComponent(`${track.title} ${track.artist}`);
+          const itunes = await fetch(
+            `https://itunes.apple.com/search?term=${term}&entity=song&limit=1`,
+            { signal: AbortSignal.timeout(3000) },
+          ).then((r) => r.json()) as { results?: { artworkUrl100?: string }[] };
+          const art = itunes.results?.[0]?.artworkUrl100?.replace("100x100", "400x400") ?? null;
+          return { ...track, cover: art };
+        } catch {
+          return { ...track, cover: null };
+        }
+      }),
+    );
+
+    res.json(enriched);
   } catch (err) {
     req.log.error(err);
     res.status(502).json({ error: "Search failed" });

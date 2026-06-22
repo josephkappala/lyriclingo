@@ -5,9 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LyricLingo — Learn languages through music</title>
   <meta name="description" content="Search any song, see bilingual lyrics side by side, and tap any line to hear it spoken aloud." />
-  <meta property="og:title" content="LyricLingo" />
-  <meta property="og:description" content="Learn languages through music — bilingual lyrics with AI text-to-speech." />
-  <meta property="og:type" content="website" />
+  <meta name="color-scheme" content="light" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -43,38 +41,40 @@
       </p>
     </div>
 
-    <!-- ── Search (always visible) ── -->
+    <!-- ── Search card ── -->
     <section class="search-section">
-      <form id="search-form" role="search">
-        <div class="search-row">
-          <input
-            type="search"
-            id="search-input"
-            placeholder='Try "Despacito", "BTS", "Stromae"…'
-            autocomplete="off"
-            aria-label="Search for a song or artist"
-          />
-          <button type="submit" aria-label="Search">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-          </button>
-        </div>
-        <div class="lang-row">
-          <label for="lang-select">Translate to:</label>
-          <select id="lang-select" aria-label="Translation language">
-            <option value="en">English</option>
-            <option value="es">Spanish</option>
-            <option value="fr">French</option>
-            <option value="de">German</option>
-            <option value="it">Italian</option>
-            <option value="pt">Portuguese</option>
-            <option value="ja">Japanese</option>
-            <option value="ko">Korean</option>
-            <option value="hi">Hindi</option>
-          </select>
-        </div>
-      </form>
+      <div class="search-card">
+        <form id="search-form" role="search">
+          <div class="search-row">
+            <input
+              type="search"
+              id="search-input"
+              placeholder='Try "Despacito", "BTS", "Stromae"…'
+              autocomplete="off"
+              aria-label="Search for a song or artist"
+            />
+            <button type="submit" class="search-btn" aria-label="Search">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              </svg>
+            </button>
+          </div>
+          <div class="lang-row">
+            <label for="lang-select">Translate to:</label>
+            <select id="lang-select" aria-label="Translation language">
+              <option value="en">English</option>
+              <option value="es">Spanish</option>
+              <option value="fr">French</option>
+              <option value="de">German</option>
+              <option value="it">Italian</option>
+              <option value="pt">Portuguese</option>
+              <option value="ja">Japanese</option>
+              <option value="ko">Korean</option>
+              <option value="hi">Hindi</option>
+            </select>
+          </div>
+        </form>
+      </div>
     </section>
 
     <!-- ── Feature cards (hides after first search) ── -->
@@ -111,30 +111,25 @@
       </div>
     </section>
 
-    <!-- ── Results ── -->
-    <section id="results-section" class="results-section" aria-label="Search results" style="display:none">
-      <ul id="results-list" role="list"></ul>
-    </section>
-
-    <!-- ── Lyrics ── -->
+    <!-- ── Lyrics (inline glass panel) ── -->
     <section id="lyrics-section" class="lyrics-section" style="display:none" aria-label="Lyrics">
       <div class="song-header">
         <div class="header-controls">
-          <button id="back-btn" aria-label="Back to results">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <button id="back-btn" class="ctrl-btn" aria-label="Back to results">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
             Back
           </button>
-          <button id="play-all-btn" aria-label="Play all lines aloud">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <button id="play-all-btn" class="ctrl-btn" aria-label="Play all lines aloud">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
               <path d="M8 5v14l11-7z"/>
             </svg>
             Play All
           </button>
         </div>
         <div class="song-meta">
-          <img id="song-cover" src="" alt="" width="56" height="56" />
+          <img id="song-cover" src="" alt="" width="52" height="52" />
           <div>
             <div id="song-title" class="song-title"></div>
             <div id="song-artist" class="song-artist"></div>
@@ -143,7 +138,7 @@
       </div>
       <div id="lyrics-list" class="lyrics-list" role="list"></div>
       <div id="lyrics-loading" class="loading-state" style="display:none">
-        <div class="spinner" aria-label="Loading lyrics…"></div>
+        <div class="spinner"></div>
         <span>Loading lyrics…</span>
       </div>
       <div id="lyrics-error" class="error-state" style="display:none"></div>
@@ -157,8 +152,27 @@
 
   </main>
 
+  <!-- ── Results popup overlay (fixed, outside main) ── -->
+  <div id="results-overlay" class="results-overlay" style="display:none" role="dialog" aria-modal="true" aria-label="Search results">
+    <div class="results-modal" id="results-modal">
+      <div class="modal-header">
+        <div class="modal-handle" aria-hidden="true"></div>
+        <span class="modal-title" id="results-modal-title">Results</span>
+        <button id="close-results-btn" class="modal-close-btn" aria-label="Close search results">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" aria-hidden="true">
+            <path d="M18 6L6 18M6 6l12 12"/>
+          </svg>
+        </button>
+      </div>
+      <div class="results-scroll">
+        <ul id="results-list" role="list"></ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Audio indicator ── -->
   <div id="audio-indicator" class="audio-indicator" style="display:none" aria-live="polite">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
     </svg>
     Playing…

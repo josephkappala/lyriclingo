@@ -2,37 +2,41 @@
 
 const BASE = '/api';
 
-// DOM refs
-const searchForm = document.getElementById('search-form');
-const searchInput = document.getElementById('search-input');
-const langSelect = document.getElementById('lang-select');
-const heroContent = document.getElementById('hero-content');
-const featuresSection = document.getElementById('features-section');
-const resultsSection = document.getElementById('results-section');
-const resultsList = document.getElementById('results-list');
-const lyricsSection = document.getElementById('lyrics-section');
-const lyricsList = document.getElementById('lyrics-list');
-const lyricsLoading = document.getElementById('lyrics-loading');
-const lyricsError = document.getElementById('lyrics-error');
-const globalLoading = document.getElementById('global-loading');
-const globalError = document.getElementById('global-error');
-const backBtn = document.getElementById('back-btn');
-const playAllBtn = document.getElementById('play-all-btn');
-const navLogoBtn = document.getElementById('nav-logo-btn');
-const songCover = document.getElementById('song-cover');
-const songTitle = document.getElementById('song-title');
-const songArtist = document.getElementById('song-artist');
-const audioIndicator = document.getElementById('audio-indicator');
+// ── DOM refs ──
+const searchForm        = document.getElementById('search-form');
+const searchInput       = document.getElementById('search-input');
+const langSelect        = document.getElementById('lang-select');
+const heroContent       = document.getElementById('hero-content');
+const featuresSection   = document.getElementById('features-section');
+const resultsOverlay    = document.getElementById('results-overlay');
+const resultsModalEl    = document.getElementById('results-modal');
+const resultsList       = document.getElementById('results-list');
+const resultsModalTitle = document.getElementById('results-modal-title');
+const closeResultsBtn   = document.getElementById('close-results-btn');
+const lyricsSection     = document.getElementById('lyrics-section');
+const lyricsList        = document.getElementById('lyrics-list');
+const lyricsLoading     = document.getElementById('lyrics-loading');
+const lyricsError       = document.getElementById('lyrics-error');
+const globalLoading     = document.getElementById('global-loading');
+const globalError       = document.getElementById('global-error');
+const backBtn           = document.getElementById('back-btn');
+const playAllBtn        = document.getElementById('play-all-btn');
+const navLogoBtn        = document.getElementById('nav-logo-btn');
+const songCover         = document.getElementById('song-cover');
+const songTitle         = document.getElementById('song-title');
+const songArtist        = document.getElementById('song-artist');
+const audioIndicator    = document.getElementById('audio-indicator');
 
-let currentAudio = null;
-let currentTrack = null;
-let playingLine = null;
+// ── State ──
+let currentAudio    = null;
+let currentTrack    = null;
+let playingLine     = null;
 
-// ── Play All state ──
-let lineEls = [];        // { el, text }[] — repopulated on each renderLyrics
-let playAllSession = 0;  // incremented on every start/stop to cancel orphaned chains
-let playAllActive = false;
-let playAllResolve = null; // lets stopAudio() unblock a mid-playback await
+// Play All
+let lineEls         = [];
+let playAllSession  = 0;
+let playAllActive   = false;
+let playAllResolve  = null;
 
 // ── Utilities ──
 
@@ -53,33 +57,13 @@ async function apiFetch(path) {
   return res.json();
 }
 
-// ── Search ──
-
-searchForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const q = searchInput.value.trim();
-  if (!q) return;
-
-  hide(resultsSection);
-  hide(lyricsSection);
-  hide(globalError);
-  show(globalLoading);
-
-  try {
-    const tracks = await apiFetch(`/search?q=${encodeURIComponent(q)}`);
-    hide(globalLoading);
-    renderResults(tracks);
-  } catch (err) {
-    hide(globalLoading);
-    showError(globalError, `Search failed: ${err.message}`);
-  }
-});
+// ── Home ──
 
 function showHome() {
   stopAudio();
   show(heroContent);
   show(featuresSection);
-  hide(resultsSection);
+  hide(resultsOverlay);
   hide(lyricsSection);
   hide(globalLoading);
   hide(globalError);
@@ -90,10 +74,33 @@ function showHome() {
 
 navLogoBtn.addEventListener('click', showHome);
 
-function renderResults(tracks) {
-  // Collapse hero on first search
+// ── Search ──
+
+searchForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const q = searchInput.value.trim();
+  if (!q) return;
+
+  hide(resultsOverlay);
+  hide(lyricsSection);
+  hide(globalError);
+  show(globalLoading);
+
+  try {
+    const tracks = await apiFetch(`/search?q=${encodeURIComponent(q)}`);
+    hide(globalLoading);
+    renderResults(tracks, q);
+  } catch (err) {
+    hide(globalLoading);
+    showError(globalError, `Search failed: ${err.message}`);
+  }
+});
+
+function renderResults(tracks, query = '') {
+  // Collapse hero/features on first search
   hide(heroContent);
   hide(featuresSection);
+
   resultsList.innerHTML = '';
 
   if (!tracks.length) {
@@ -101,14 +108,19 @@ function renderResults(tracks) {
     return;
   }
 
+  // Update modal title with query
+  resultsModalTitle.textContent = query
+    ? `Results for "${query}"`
+    : 'Search results';
+
   for (const track of tracks) {
-    const li = document.createElement('li');
+    const li  = document.createElement('li');
     const btn = document.createElement('button');
     btn.className = 'track-item';
     btn.setAttribute('role', 'listitem');
 
     const coverEl = track.cover
-      ? `<img class="track-cover" src="${escHtml(track.cover)}" alt="" width="48" height="48" loading="lazy" />`
+      ? `<img class="track-cover" src="${escHtml(track.cover)}" alt="" width="46" height="46" loading="lazy" />`
       : `<div class="track-cover no-cover" aria-hidden="true">♪</div>`;
 
     btn.innerHTML = `
@@ -119,48 +131,74 @@ function renderResults(tracks) {
       </div>
     `;
 
-    btn.addEventListener('click', () => loadLyrics(track));
+    btn.addEventListener('click', () => {
+      hide(resultsOverlay);
+      loadLyrics(track);
+    });
+
     li.appendChild(btn);
     resultsList.appendChild(li);
   }
 
-  show(resultsSection);
+  show(resultsOverlay);
+
+  // Move focus into the modal for accessibility
+  closeResultsBtn.focus();
 }
+
+// ── Results overlay close handlers ──
+
+closeResultsBtn.addEventListener('click', showHome);
+
+// Click outside the modal card → close (back to home)
+resultsOverlay.addEventListener('click', (e) => {
+  if (e.target === resultsOverlay) showHome();
+});
+
+// Escape key → close overlay or exit lyrics
+document.addEventListener('keydown', (e) => {
+  if (e.key !== 'Escape') return;
+  if (resultsOverlay.style.display !== 'none') {
+    showHome();
+  } else if (lyricsSection.style.display !== 'none') {
+    stopAudio();
+    hide(lyricsSection);
+    show(resultsOverlay);
+  }
+});
 
 // ── Lyrics ──
 
 async function loadLyrics(track) {
-  stopAudio(); // also resets Play All if active
+  stopAudio();
   currentTrack = track;
 
-  songCover.src = track.cover || '';
-  songCover.style.display = track.cover ? '' : 'none';
-  songTitle.textContent = track.title;
-  songArtist.textContent = track.artist;
+  songCover.src             = track.cover || '';
+  songCover.style.display   = track.cover ? '' : 'none';
+  songTitle.textContent     = track.title;
+  songArtist.textContent    = track.artist;
 
-  hide(resultsSection);
   lyricsList.innerHTML = '';
-  lineEls = [];
-  playAllBtn.disabled = true;
+  lineEls              = [];
+  playAllBtn.disabled  = true;
   hide(lyricsError);
   show(lyricsLoading);
   show(lyricsSection);
 
   try {
-    const lang = langSelect.value;
+    const lang       = langSelect.value;
     const lyricsData = await apiFetch(
       `/lyrics?track_id=${track.id}&lang=${encodeURIComponent(lang)}`
     );
 
-    // Use Musixmatch translation if /api/lyrics already found one;
-    // otherwise call /api/translate for the keyless fallback.
+    // Use Musixmatch translation if already returned; otherwise call /api/translate
     let translationLines = lyricsData.translationLines || [];
     if (translationLines.length === 0 && lang) {
       try {
         const tRes = await fetch(`${BASE}/translate`, {
-          method: 'POST',
+          method:  'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
+          body:    JSON.stringify({
             track_id: String(track.id),
             lang,
             lines: (lyricsData.lines || []).map((l) => l.text),
@@ -183,7 +221,7 @@ async function loadLyrics(track) {
   }
 }
 
-// Re-fetch with new language when dropdown changes (lyrics already open)
+// Re-fetch with new language when dropdown changes while lyrics are open
 langSelect.addEventListener('change', () => {
   if (currentTrack && lyricsSection.style.display !== 'none') {
     loadLyrics(currentTrack);
@@ -204,7 +242,7 @@ function renderLyrics(origLines, transLines, synced) {
     const badge = document.createElement('div');
     badge.className = 'synced-badge';
     badge.innerHTML = `
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14.5v-9l6 4.5-6 4.5z"/>
       </svg>
       Time-synced lyrics
@@ -225,7 +263,6 @@ function renderLyrics(origLines, transLines, synced) {
       ${translation ? `<div class="lyric-translation">${escHtml(translation)}</div>` : ''}
     `;
 
-    // Always speak the original line via ElevenLabs
     const playThis = () => playLine(div, line.text);
     div.addEventListener('click', playThis);
     div.addEventListener('keydown', (e) => {
@@ -237,7 +274,7 @@ function renderLyrics(origLines, transLines, synced) {
   });
 }
 
-// ── TTS / Audio (ElevenLabs) ──
+// ── TTS / Audio ──
 
 async function playLine(el, text) {
   if (playingLine === el && currentAudio && !currentAudio.paused) {
@@ -252,19 +289,18 @@ async function playLine(el, text) {
 
   try {
     const res = await fetch(`${BASE}/tts`, {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
+      body:    JSON.stringify({ text }),
     });
 
     if (!res.ok) {
       const body = await res.json().catch(() => ({}));
-      throw new Error(body.error || `TTS request failed (${res.status})`);
+      throw new Error(body.error || `TTS failed (${res.status})`);
     }
 
     const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-
+    const url  = URL.createObjectURL(blob);
     currentAudio = new Audio(url);
     el.classList.add('playing');
 
@@ -273,9 +309,8 @@ async function playLine(el, text) {
       hide(audioIndicator);
       URL.revokeObjectURL(url);
       currentAudio = null;
-      playingLine = null;
+      playingLine  = null;
     });
-
     currentAudio.addEventListener('error', () => {
       el.classList.remove('playing', 'active');
       hide(audioIndicator);
@@ -300,13 +335,11 @@ function stopAudio() {
     playingLine = null;
   }
   hide(audioIndicator);
-  // Unblock any mid-playback await in playLineForChain
   if (playAllResolve) {
-    const resolve = playAllResolve;
+    const res = playAllResolve;
     playAllResolve = null;
-    resolve();
+    res();
   }
-  // Cancel the Play All chain and reset button
   if (playAllActive) {
     playAllSession++;
     playAllActive = false;
@@ -319,8 +352,8 @@ function stopAudio() {
 function setPlayAllBtn(active) {
   if (active) {
     playAllBtn.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <rect x="6" y="6" width="12" height="12"/>
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <rect x="6" y="6" width="12" height="12" rx="2"/>
       </svg>
       Stop
     `;
@@ -328,7 +361,7 @@ function setPlayAllBtn(active) {
     playAllBtn.setAttribute('aria-label', 'Stop playback');
   } else {
     playAllBtn.innerHTML = `
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M8 5v14l11-7z"/>
       </svg>
       Play All
@@ -339,17 +372,14 @@ function setPlayAllBtn(active) {
 }
 
 playAllBtn.addEventListener('click', () => {
-  if (playAllActive) {
-    stopAudio(); // stopAudio handles the reset
-  } else {
-    playAll();
-  }
+  if (playAllActive) stopAudio();
+  else playAll();
 });
 
 async function playAll() {
   if (!lineEls.length) return;
 
-  stopAudio();           // clear any single-line playback first
+  stopAudio();
   playAllActive = true;
   playAllSession++;
   const session = playAllSession;
@@ -362,13 +392,11 @@ async function playAll() {
     if (!text.trim()) continue;   // skip blank / section-header lines
 
     el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-
     await playLineForChain(el, text, session);
 
     if (playAllSession !== session) break;
   }
 
-  // Only reset if no newer session has taken over
   if (playAllSession === session) {
     playAllActive = false;
     setPlayAllBtn(false);
@@ -385,9 +413,9 @@ async function playLineForChain(el, text, session) {
   let res;
   try {
     res = await fetch(`${BASE}/tts`, {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
+      body:    JSON.stringify({ text }),
     });
   } catch {
     el.classList.remove('active');
@@ -402,9 +430,7 @@ async function playLineForChain(el, text, session) {
   }
 
   let blob;
-  try {
-    blob = await res.blob();
-  } catch {
+  try { blob = await res.blob(); } catch {
     el.classList.remove('active');
     if (playingLine === el) { playingLine = null; hide(audioIndicator); }
     return;
@@ -416,43 +442,30 @@ async function playLineForChain(el, text, session) {
     return;
   }
 
-  const url = URL.createObjectURL(blob);
+  const url   = URL.createObjectURL(blob);
   const audio = new Audio(url);
   currentAudio = audio;
   el.classList.add('playing');
 
   await new Promise((resolve) => {
     playAllResolve = resolve;
-
-    audio.addEventListener('ended', () => {
-      playAllResolve = null;
-      resolve();
-    });
-    audio.addEventListener('error', () => {
-      playAllResolve = null;
-      resolve();
-    });
-    audio.play().catch(() => {
-      playAllResolve = null;
-      resolve();
-    });
+    audio.addEventListener('ended', () => { playAllResolve = null; resolve(); });
+    audio.addEventListener('error', () => { playAllResolve = null; resolve(); });
+    audio.play().catch(()         => { playAllResolve = null; resolve(); });
   });
 
   el.classList.remove('playing', 'active');
-  if (playingLine === el) playingLine = null;
-  if (currentAudio === audio) {
-    currentAudio = null;
-    hide(audioIndicator);
-  }
+  if (playingLine  === el)    playingLine  = null;
+  if (currentAudio === audio) { currentAudio = null; hide(audioIndicator); }
   URL.revokeObjectURL(url);
 }
 
-// ── Back button ──
+// ── Back button (lyrics → results popup) ──
 
 backBtn.addEventListener('click', () => {
   stopAudio();
   hide(lyricsSection);
-  show(resultsSection);
+  show(resultsOverlay);
 });
 
 // ── XSS safety ──

@@ -57,14 +57,15 @@ router.get("/search", async (req, res) => {
       f_has_lyrics: "1",
       s_track_rating: "desc",
       page_size: "8",
-    })) as { track_list: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string } }[] };
+    })) as { track_list: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string; explicit: number } }[] };
 
     const tracks = (body.track_list ?? []).map(
-      (t: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string } }) => ({
+      (t: { track: { track_id: number; track_name: string; artist_name: string; album_coverart_100x100: string; explicit: number } }) => ({
         id: t.track.track_id,
         title: t.track.track_name,
         artist: t.track.artist_name,
         cover: t.track.album_coverart_100x100,
+        explicit: t.track.explicit === 1,
       }),
     );
     res.json(tracks);

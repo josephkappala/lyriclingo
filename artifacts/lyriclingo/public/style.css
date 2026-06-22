@@ -229,12 +229,14 @@ main {
 .search-card {
   background: rgba(255, 255, 255, 0.97);
   border: 1px solid rgba(255, 255, 255, 0.95);
-  border-radius: var(--radius-lg);
+  border-radius: 20px;
   box-shadow:
-    0 24px 64px rgba(0, 0, 0, 0.55),
-    0 6px 24px rgba(0, 0, 0, 0.30),
+    0 20px 60px rgba(0, 0, 0, 0.40),
+    0 8px 28px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 1);
-  padding: 1.1rem 1.25rem;
+  padding: 1.4rem 1.5rem 1.2rem;
+  max-width: 640px;
+  margin: 0 auto;
 }
 
 .search-row {
@@ -437,73 +439,103 @@ main {
 
 #results-list {
   list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.4rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(138px, 1fr));
+  gap: 0.875rem;
 }
 
-.track-item {
-  background: rgba(8, 14, 38, 0.70);
+@media (max-width: 400px) {
+  #results-list { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ── Album card ── */
+.track-card {
+  background: rgba(8, 14, 38, 0.72);
   border: 1px solid rgba(255, 255, 255, 0.11);
-  border-radius: var(--radius);
-  display: flex;
-  align-items: center;
-  gap: 0.875rem;
-  padding: 0.75rem 0.875rem;
+  border-radius: 14px;
   cursor: pointer;
-  transition: background var(--ease), border-color var(--ease), transform var(--ease), box-shadow var(--ease);
+  padding: 0;
+  overflow: hidden;
   width: 100%;
   text-align: left;
+  display: flex;
+  flex-direction: column;
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
+  transition: transform var(--ease), box-shadow var(--ease), border-color var(--ease);
 }
 
-.track-item:hover {
-  background: rgba(8, 14, 38, 0.85);
+.track-card:hover {
+  transform: translateY(-3px);
   border-color: rgba(255, 180, 84, 0.45);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.40);
-  transform: translateY(-1px);
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.45);
 }
 
-.track-item:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
-.track-item:active { transform: scale(0.99); }
+.track-card:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+.track-card:active { transform: scale(0.98); }
 
-.track-cover {
-  width: 46px;
-  height: 46px;
-  border-radius: 10px;
+/* Square art area */
+.track-card-art {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  background: rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+}
+
+.track-card-art img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
-  background: rgba(255, 255, 255, 0.08);
-  flex-shrink: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.35);
+  display: block;
 }
 
-.track-cover.no-cover {
+.track-card-art .no-cover {
+  width: 100%;
+  height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--muted);
-  font-size: 1.3rem;
+  color: rgba(255, 255, 255, 0.18);
+  font-size: 2.2rem;
 }
 
-.track-info { min-width: 0; }
+.explicit-badge {
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+  background: rgba(0, 0, 0, 0.65);
+  color: rgba(255, 255, 255, 0.80);
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  padding: 0.12rem 0.38rem;
+  border-radius: 3px;
+}
 
-.track-title {
+/* Text area below art */
+.track-card-info {
+  padding: 0.6rem 0.7rem 0.75rem;
+  min-width: 0;
+}
+
+.track-card-title {
   font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--text);
+  font-size: 0.84rem;
+  color: #ffffff;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  line-height: 1.3;
 }
 
-.track-artist {
-  color: rgba(200, 210, 240, 0.70);
-  font-size: 0.78rem;
+.track-card-artist {
+  font-size: 0.74rem;
+  color: rgba(200, 210, 240, 0.65);
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-  margin-top: 0.1rem;
+  margin-top: 0.2rem;
 }
 
 /* ── Lyrics section ── */

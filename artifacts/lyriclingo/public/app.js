@@ -159,18 +159,25 @@ function renderResults(tracks, query = '') {
   for (const track of tracks) {
     const li  = document.createElement('li');
     const btn = document.createElement('button');
-    btn.className = 'track-item';
-    btn.setAttribute('role', 'listitem');
+    btn.className = 'track-card';
+    btn.setAttribute('aria-label', `${track.title} by ${track.artist}`);
 
-    const coverEl = track.cover
-      ? `<img class="track-cover" src="${escHtml(track.cover)}" alt="" width="46" height="46" loading="lazy" />`
-      : `<div class="track-cover no-cover" aria-hidden="true">♪</div>`;
+    const artInner = track.cover
+      ? `<img src="${escHtml(track.cover)}" alt="" loading="lazy" />`
+      : `<div class="no-cover" aria-hidden="true">♪</div>`;
+
+    const explicitBadge = track.explicit
+      ? `<span class="explicit-badge">E</span>`
+      : '';
 
     btn.innerHTML = `
-      ${coverEl}
-      <div class="track-info">
-        <div class="track-title">${escHtml(track.title)}</div>
-        <div class="track-artist">${escHtml(track.artist)}</div>
+      <div class="track-card-art">
+        ${artInner}
+        ${explicitBadge}
+      </div>
+      <div class="track-card-info">
+        <div class="track-card-title">${escHtml(track.title)}</div>
+        <div class="track-card-artist">${escHtml(track.artist)}</div>
       </div>
     `;
 

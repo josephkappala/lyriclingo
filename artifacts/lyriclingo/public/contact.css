@@ -1,0 +1,231 @@
+/* ── Contact page styles ── */
+
+.cp-main {
+  max-width: 980px;
+  margin: 0 auto;
+  padding: var(--nav-h) 1.5rem 6rem;
+}
+
+/* ── Page hero ── */
+.cp-hero {
+  text-align: center;
+  padding: 3.5rem 0 3rem;
+}
+
+.cp-headline {
+  font-family: var(--font-title);
+  font-size: clamp(2.4rem, 6vw, 3.8rem);
+  font-weight: 900;
+  color: #ffffff;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin: 1.5rem 0 1rem;
+}
+
+.cp-sub {
+  color: var(--text-sec);
+  font-size: 1.05rem;
+  max-width: 440px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+/* ── Layout ── */
+.cp-layout {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+/* ── Info sidebar ── */
+.cp-info-card {
+  background: rgba(8, 14, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 20px;
+  padding: 1.75rem 1.5rem;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.cp-info-item {
+  display: flex;
+  gap: 0.875rem;
+  align-items: flex-start;
+}
+
+.cp-info-icon {
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  background: rgba(255, 180, 84, 0.12);
+  border: 1px solid rgba(255, 180, 84, 0.25);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--amber);
+}
+
+.cp-info-label {
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgba(200, 210, 240, 0.50);
+  margin-bottom: 0.2rem;
+}
+
+.cp-info-value {
+  font-size: 0.9rem;
+  color: rgba(200, 210, 240, 0.90);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a.cp-info-value:hover { color: var(--amber); }
+
+/* ── Form card ── */
+.cp-form-wrap {
+  background: rgba(8, 14, 38, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  border-radius: 20px;
+  padding: 2rem;
+  backdrop-filter: blur(20px) saturate(160%);
+  -webkit-backdrop-filter: blur(20px) saturate(160%);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.30);
+}
+
+/* ── Form fields ── */
+.cf-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.cf-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  margin-bottom: 1rem;
+}
+
+.cf-row .cf-field { margin-bottom: 0; }
+
+.cf-label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(200, 210, 240, 0.80);
+  letter-spacing: 0.01em;
+}
+
+.cf-input {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1.5px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  color: #ffffff;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  padding: 0.7rem 0.95rem;
+  outline: none;
+  transition: border-color 0.18s, background 0.18s, box-shadow 0.18s;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.cf-input::placeholder { color: rgba(200, 210, 240, 0.30); }
+
+.cf-input:focus {
+  border-color: var(--amber);
+  background: rgba(255, 255, 255, 0.09);
+  box-shadow: 0 0 0 3px rgba(255, 180, 84, 0.18);
+}
+
+.cf-select {
+  cursor: pointer;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(200,210,240,0.5)' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.9rem center;
+  padding-right: 2.25rem;
+}
+
+.cf-select option { background: #0e1428; color: #fff; }
+
+.cf-textarea {
+  resize: vertical;
+  min-height: 120px;
+  line-height: 1.55;
+}
+
+/* ── Submit ── */
+.cf-footer {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.5rem;
+}
+
+.cf-submit {
+  background: linear-gradient(135deg, #ffb454 0%, #e8932a 100%);
+  border: none;
+  border-radius: 100px;
+  color: #fff;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  font-weight: 600;
+  padding: 0.75rem 1.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 20px rgba(255, 180, 84, 0.40);
+  transition: opacity 0.2s, transform 0.15s, box-shadow 0.2s;
+}
+
+.cf-submit:hover:not(:disabled) {
+  opacity: 0.92;
+  transform: translateY(-1px);
+  box-shadow: 0 8px 28px rgba(255, 180, 84, 0.55);
+}
+
+.cf-submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* ── States ── */
+.cf-state {
+  margin-top: 1rem;
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cf-state--error {
+  background: rgba(255, 70, 70, 0.12);
+  border: 1px solid rgba(255, 70, 70, 0.30);
+  color: #ff8080;
+}
+
+.cf-state--success {
+  background: rgba(60, 200, 120, 0.12);
+  border: 1px solid rgba(60, 200, 120, 0.30);
+  color: #6ee79a;
+}
+
+/* ── Responsive ── */
+@media (max-width: 720px) {
+  .cp-layout { grid-template-columns: 1fr; }
+  .cf-row    { grid-template-columns: 1fr; }
+  .cp-info-card { order: 2; }
+  .cp-form-wrap { order: 1; }
+}

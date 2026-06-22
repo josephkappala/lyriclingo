@@ -267,4 +267,17 @@ router.post("/tts", async (req, res) => {
   }
 });
 
+// ── POST /contact ──────────────────────────────────────────────────────────
+router.post("/contact", async (req, res) => {
+  const { name, email, subject, message } = req.body ?? {};
+
+  if (!name || !email || !message) {
+    res.status(400).json({ error: "name, email and message are required" });
+    return;
+  }
+
+  req.log.info({ name, email, subject }, "Contact form submission");
+  res.json({ ok: true });
+});
+
 export default router;

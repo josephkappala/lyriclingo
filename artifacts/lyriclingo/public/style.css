@@ -508,10 +508,10 @@ main {
 
 /* ── Lyrics section ── */
 .lyrics-section {
-  background: rgba(255, 255, 255, 0.04);
+  background: rgba(8, 14, 38, 0.78);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(255, 255, 255, 0.09);
+  border: 1px solid rgba(255, 255, 255, 0.11);
   border-radius: var(--radius-xl);
   box-shadow: var(--glass-shadow);
   padding: 1.5rem;
@@ -679,13 +679,12 @@ main {
 }
 
 .lyric-translation {
-  color: var(--muted);
+  color: rgba(200, 210, 240, 0.72);
   font-size: 0.8rem;
   font-style: italic;
   font-weight: 400;
   margin-top: 0.08rem;
   line-height: 1.35;
-  opacity: 0.85;
 }
 
 /* ── Loading & errors ── */

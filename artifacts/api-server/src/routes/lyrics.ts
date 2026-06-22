@@ -142,33 +142,36 @@ router.post("/translate", async (req, res) => {
       return;
     }
 
-    // Translate in chunks to stay within MyMemory's 5000-char limit
-    const SEPARATOR = "\n||||\n";
+    // Translate in batches using Google Translate (no API key required)
+    const BATCH_SIZE = 25;
     const translated: string[] = [];
-    let chunk: string[] = [];
-    let chunkLen = 0;
 
-    const translateChunk = async (batch: string[]): Promise<string[]> => {
-      const joined = batch.join(SEPARATOR);
-      const langpair = `${from}|${to}`;
-      const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=${encodeURIComponent(langpair)}`;
-      const r = await fetch(url, { signal: AbortSignal.timeout(10000) });
-      const json = (await r.json()) as { responseStatus: number; responseData: { translatedText: string } };
-      if (json.responseStatus !== 200) return batch; // fallback to original
-      return json.responseData.translatedText.split("||||").map((s) => s.replace(/^\n+|\n+$/g, "").trim());
+    const translateBatch = async (batch: string[]): Promise<string[]> => {
+      // Join with newlines — Google preserves them
+      const q = batch.join("\n");
+      const url =
+        `https://translate.googleapis.com/translate_a/single` +
+        `?client=gtx&sl=${encodeURIComponent(from === "autodetect" ? "auto" : from)}` +
+        `&tl=${encodeURIComponent(to)}&dt=t&q=${encodeURIComponent(q)}`;
+      const r = await fetch(url, { signal: AbortSignal.timeout(12000) });
+      if (!r.ok) {
+        req.log.warn({ status: r.status }, "Google Translate request failed, using originals");
+        return batch;
+      }
+      const json = (await r.json()) as [[string, string][]] | unknown;
+      if (!Array.isArray(json) || !Array.isArray(json[0])) return batch;
+      // json[0] is array of [translated_piece, original_piece, ...]
+      const pieces = (json[0] as [string][]).map((p) => p[0]);
+      const full = pieces.join("").split("\n");
+      // Align result length to input length
+      while (full.length < batch.length) full.push(batch[full.length] ?? "");
+      return full.slice(0, batch.length);
     };
 
-    for (const line of lines) {
-      const lineLen = line.length + SEPARATOR.length;
-      if (chunkLen + lineLen > 4800 && chunk.length > 0) {
-        translated.push(...(await translateChunk(chunk)));
-        chunk = [];
-        chunkLen = 0;
-      }
-      chunk.push(line);
-      chunkLen += lineLen;
+    for (let i = 0; i < lines.length; i += BATCH_SIZE) {
+      const batch = lines.slice(i, i + BATCH_SIZE);
+      translated.push(...(await translateBatch(batch)));
     }
-    if (chunk.length > 0) translated.push(...(await translateChunk(chunk)));
 
     res.json({ lines: translated });
   } catch (err) {

@@ -42,15 +42,7 @@ body {
   color: var(--text);
   line-height: 1.6;
   overflow-x: hidden;
-  /* Night-sky nebula gradient — the "atmosphere" that makes dark glass shimmer */
-  background:
-    radial-gradient(ellipse at 15%  0%,  rgba(48,  72, 200, 0.55) 0%, transparent 50%),
-    radial-gradient(ellipse at 85% 15%,  rgba(110, 40, 160, 0.40) 0%, transparent 48%),
-    radial-gradient(ellipse at 50% 90%,  rgba(30,  60, 120, 0.45) 0%, transparent 55%),
-    radial-gradient(ellipse at 92% 85%,  rgba(160, 80,  20, 0.22) 0%, transparent 38%),
-    radial-gradient(ellipse at 8%  75%,  rgba(20,  80,  80, 0.25) 0%, transparent 42%),
-    #060a14;
-  background-attachment: fixed;
+  background: url('/bg.png') center top / cover fixed, #060a14;
 }
 
 /* ── Glass mixin ── */

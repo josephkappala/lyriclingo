@@ -300,28 +300,11 @@ main {
 }
 
 .lyric-translation {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
   color: var(--muted);
   font-size: 0.875rem;
   font-style: italic;
   margin-top: 0.15rem;
   line-height: 1.4;
-}
-
-.play-hint {
-  font-style: normal;
-  font-size: 0.6rem;
-  opacity: 0;
-  color: var(--amber);
-  transition: opacity 0.15s;
-  flex-shrink: 0;
-}
-
-.lyric-line:hover .play-hint,
-.lyric-line:focus .play-hint {
-  opacity: 1;
 }
 
 /* ── Loading & errors ── */

@@ -1,3 +1,4 @@
+import { createHmac } from "crypto";
 import { Router, type IRouter } from "express";
 
 const router: IRouter = Router();
@@ -5,6 +6,7 @@ const router: IRouter = Router();
 const MUSIXMATCH_BASE =
   process.env["MUSIXMATCH_BASE"] ?? "https://api.musixmatch.com/ws/1.1";
 const MUSIXMATCH_API_KEY = process.env["MUSIXMATCH_API_KEY"] ?? "";
+const MUSIXMATCH_SECRET = process.env["MUSIXMATCH_SECRET"] ?? "";
 const ELEVENLABS_API_KEY = process.env["ELEVENLABS_API_KEY"] ?? "";
 
 function mmUrl(method: string, params: Record<string, string>): string {
@@ -20,14 +22,24 @@ function mmUrl(method: string, params: Record<string, string>): string {
 async function mmFetch(method: string, params: Record<string, string>) {
   const res = await fetch(mmUrl(method, params));
   const json = (await res.json()) as {
-    message: { header: { status_code: number }; body: unknown };
+    message: { header: { status_code: number; execute_time?: number }; body: unknown };
   };
   const status = json.message.header.status_code;
   if (status !== 200) {
-    throw Object.assign(new Error(`Musixmatch error ${status}`), { status });
+    const err = Object.assign(new Error(`Musixmatch error ${status}`), { status, header: json.message.header });
+    throw err;
   }
   return json.message.body;
 }
+
+// GET /api/mmtest - raw Musixmatch diagnostic (dev only)
+router.get("/mmtest", async (req, res) => {
+  const url = mmUrl("track.search", { q_track_artist: "test", page_size: "1" });
+  const raw = await fetch(url);
+  const text = await raw.text();
+  res.set("Content-Type", "application/json");
+  res.send(text);
+});
 
 // GET /api/health
 router.get("/health", (_req, res) => {

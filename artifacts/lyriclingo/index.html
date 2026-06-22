@@ -6,28 +6,51 @@
   <title>LyricLingo — Learn languages through music</title>
   <meta name="description" content="Search any song, see bilingual lyrics side by side, and tap any line to hear it spoken aloud." />
   <meta property="og:title" content="LyricLingo" />
-  <meta property="og:description" content="Learn languages through music — bilingual lyrics with text-to-speech." />
+  <meta property="og:description" content="Learn languages through music — bilingual lyrics with AI text-to-speech." />
   <meta property="og:type" content="website" />
   <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,700;0,900;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/style.css" />
 </head>
 <body>
-  <header>
-    <h1 class="logo">LyricLingo</h1>
-    <p class="tagline">Learn languages through music</p>
-  </header>
+
+  <!-- ── Sticky nav ── -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <button class="nav-logo" id="nav-logo-btn" aria-label="Go to home">LyricLingo</button>
+    </div>
+  </nav>
 
   <main>
+
+    <!-- ── Hero (hides after first search) ── -->
+    <div id="hero-content" class="hero-content">
+      <div class="hero-badge">
+        <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+        </svg>
+        Language learning, reimagined
+      </div>
+      <h1 class="hero-headline">
+        Learn Any Language<br>
+        <span class="hero-headline-accent">Through Music</span>
+      </h1>
+      <p class="hero-sub">
+        Search any song, read bilingual lyrics side by side,<br class="hero-br">
+        and tap any line to hear it spoken in the original voice.
+      </p>
+    </div>
+
+    <!-- ── Search (always visible) ── -->
     <section class="search-section">
       <form id="search-form" role="search">
         <div class="search-row">
           <input
             type="search"
             id="search-input"
-            placeholder="Search for a song or artist…"
+            placeholder='Try "Despacito", "BTS", "Stromae"…'
             autocomplete="off"
             aria-label="Search for a song or artist"
           />
@@ -54,10 +77,46 @@
       </form>
     </section>
 
+    <!-- ── Feature cards (hides after first search) ── -->
+    <section id="features-section" class="features-section" aria-label="How it works">
+      <p class="features-label">How it works</p>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Find any song</h3>
+          <p class="feature-desc">Search millions of tracks by title or artist. Works in any language.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M5 8l6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Read bilingually</h3>
+          <p class="feature-desc">See original lyrics with instant translations in 9 languages, line by line.</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+            </svg>
+          </div>
+          <h3 class="feature-title">Hear it spoken</h3>
+          <p class="feature-desc">Tap any line or hit Play All to hear AI-powered pronunciation in the original language.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── Results ── -->
     <section id="results-section" class="results-section" aria-label="Search results" style="display:none">
       <ul id="results-list" role="list"></ul>
     </section>
 
+    <!-- ── Lyrics ── -->
     <section id="lyrics-section" class="lyrics-section" style="display:none" aria-label="Lyrics">
       <div class="song-header">
         <div class="header-controls">
@@ -95,6 +154,7 @@
       <span>Searching…</span>
     </div>
     <div id="global-error" class="error-state" style="display:none"></div>
+
   </main>
 
   <div id="audio-indicator" class="audio-indicator" style="display:none" aria-live="polite">

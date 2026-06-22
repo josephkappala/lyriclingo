@@ -6,6 +6,8 @@ const BASE = '/api';
 const searchForm = document.getElementById('search-form');
 const searchInput = document.getElementById('search-input');
 const langSelect = document.getElementById('lang-select');
+const heroContent = document.getElementById('hero-content');
+const featuresSection = document.getElementById('features-section');
 const resultsSection = document.getElementById('results-section');
 const resultsList = document.getElementById('results-list');
 const lyricsSection = document.getElementById('lyrics-section');
@@ -16,6 +18,7 @@ const globalLoading = document.getElementById('global-loading');
 const globalError = document.getElementById('global-error');
 const backBtn = document.getElementById('back-btn');
 const playAllBtn = document.getElementById('play-all-btn');
+const navLogoBtn = document.getElementById('nav-logo-btn');
 const songCover = document.getElementById('song-cover');
 const songTitle = document.getElementById('song-title');
 const songArtist = document.getElementById('song-artist');
@@ -72,7 +75,25 @@ searchForm.addEventListener('submit', async (e) => {
   }
 });
 
+function showHome() {
+  stopAudio();
+  show(heroContent);
+  show(featuresSection);
+  hide(resultsSection);
+  hide(lyricsSection);
+  hide(globalLoading);
+  hide(globalError);
+  searchInput.value = '';
+  currentTrack = null;
+  lineEls = [];
+}
+
+navLogoBtn.addEventListener('click', showHome);
+
 function renderResults(tracks) {
+  // Collapse hero on first search
+  hide(heroContent);
+  hide(featuresSection);
   resultsList.innerHTML = '';
 
   if (!tracks.length) {

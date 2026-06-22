@@ -121,8 +121,30 @@ async function loadLyrics(track) {
     const lyricsData = await apiFetch(
       `/lyrics?track_id=${track.id}&lang=${encodeURIComponent(lang)}`
     );
+
+    // Use Musixmatch translation if /api/lyrics already found one;
+    // otherwise call /api/translate for the keyless fallback.
+    let translationLines = lyricsData.translationLines || [];
+    if (translationLines.length === 0 && lang && lang !== 'en') {
+      try {
+        const tRes = await fetch(`${BASE}/translate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            track_id: String(track.id),
+            lang,
+            lines: (lyricsData.lines || []).map((l) => l.text),
+          }),
+        });
+        if (tRes.ok) {
+          const tData = await tRes.json();
+          translationLines = tData.lines || [];
+        }
+      } catch { /* silently ignore — show lyrics without translation */ }
+    }
+
     hide(lyricsLoading);
-    renderLyrics(lyricsData.lines, lyricsData.translationLines || [], lyricsData.synced);
+    renderLyrics(lyricsData.lines, translationLines, lyricsData.synced);
   } catch (err) {
     hide(lyricsLoading);
     showError(lyricsError, `Could not load lyrics: ${err.message}`);

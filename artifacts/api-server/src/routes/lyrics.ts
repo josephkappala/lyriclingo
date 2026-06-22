@@ -37,6 +37,9 @@ function splitLyricsBody(raw: string): string[] {
   return clean.split("\n").map((l) => l.trim()).filter((l) => l.length > 0);
 }
 
+// ── In-memory translation cache: "track_id:lang" → translated lines ──
+const translationCache = new Map<string, string[]>();
+
 // GET /api/health
 router.get("/health", (_req, res) => {
   res.json({
@@ -121,6 +124,86 @@ router.get("/lyrics", async (req, res) => {
   } catch (err) {
     req.log.error(err);
     res.status(502).json({ error: "Lyrics fetch failed" });
+  }
+});
+
+// POST /api/translate  { track_id, lang, lines: string[] }
+// Order: (1) Musixmatch track.lyrics.translation.get  (2) keyless Google fallback
+// NEVER throws or returns non-200; silently falls back to original text on any error.
+router.post("/translate", async (req, res) => {
+  const fallbackLines: string[] = [];
+  try {
+    const {
+      track_id = "",
+      lang = "",
+      lines = [],
+    } = req.body as { track_id?: string; lang?: string; lines?: string[] };
+
+    const safeLines = Array.isArray(lines) ? lines.map(String) : [];
+    fallbackLines.push(...safeLines);
+    const safeLang = String(lang).toLowerCase().trim();
+
+    if (safeLines.length === 0 || !safeLang || safeLang === "en") {
+      res.json({ lines: safeLines });
+      return;
+    }
+
+    const cacheKey = `${track_id}:${safeLang}`;
+    if (track_id && translationCache.has(cacheKey)) {
+      res.json({ lines: translationCache.get(cacheKey)! });
+      return;
+    }
+
+    let translated: string[] = [];
+
+    // ── Step 1: Musixmatch translation ──
+    if (track_id) {
+      try {
+        const tBody = (await mmFetch("track.lyrics.translation.get", {
+          track_id,
+          selected_language: safeLang,
+        })) as { lyrics: { lyrics_body: string } };
+        const tLines = splitLyricsBody(tBody.lyrics.lyrics_body ?? "");
+        if (tLines.some((l, i) => l !== safeLines[i])) {
+          translated = tLines;
+        }
+      } catch { /* fall through to keyless fallback */ }
+    }
+
+    // ── Step 2: keyless Google unofficial API fallback ──
+    if (translated.length === 0) {
+      try {
+        const BATCH = 25;
+        const result: string[] = [];
+        for (let i = 0; i < safeLines.length; i += BATCH) {
+          const batch = safeLines.slice(i, i + BATCH);
+          try {
+            const q = batch.join("\n");
+            const url =
+              `https://translate.googleapis.com/translate_a/single` +
+              `?client=gtx&sl=auto&tl=${encodeURIComponent(safeLang)}` +
+              `&dt=t&q=${encodeURIComponent(q)}`;
+            const r = await fetch(url, { signal: AbortSignal.timeout(3000) });
+            if (!r.ok) throw new Error(`status ${r.status}`);
+            const json = (await r.json()) as [[string][]] | unknown;
+            if (!Array.isArray(json) || !Array.isArray(json[0])) throw new Error("bad shape");
+            const pieces = (json[0] as [string][]).map((p) => p[0]);
+            const full = pieces.join("").split("\n");
+            while (full.length < batch.length) full.push(batch[full.length] ?? "");
+            result.push(...full.slice(0, batch.length));
+          } catch {
+            result.push(...batch); // keep originals for this batch on any error/timeout
+          }
+        }
+        if (result.some((l, i) => l !== safeLines[i])) translated = result;
+      } catch { /* silently ignore */ }
+    }
+
+    if (translated.length === 0) translated = safeLines; // final fallback: originals
+    if (track_id) translationCache.set(cacheKey, translated);
+    res.json({ lines: translated });
+  } catch {
+    res.json({ lines: fallbackLines }); // outermost guard — always 200
   }
 });
 

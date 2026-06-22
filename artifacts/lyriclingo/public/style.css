@@ -234,65 +234,46 @@ main {
     0 20px 60px rgba(0, 0, 0, 0.40),
     0 8px 28px rgba(0, 0, 0, 0.22),
     inset 0 1px 0 rgba(255, 255, 255, 1);
-  padding: 1.4rem 1.5rem 1.2rem;
+  padding: 1.1rem 1.4rem 1rem;
   max-width: 640px;
   margin: 0 auto;
 }
 
-.search-row {
-  display: flex;
-  gap: 0.5rem;
-  margin-bottom: 0.75rem;
-}
-
 #search-input {
-  flex: 1;
-  background: rgba(0, 0, 0, 0.04);
-  border: 1.5px solid rgba(0, 0, 0, 0.10);
-  border-radius: var(--radius);
+  width: 100%;
+  box-sizing: border-box;
+  background: transparent;
+  border: none;
   color: #1c1c1e;
   font-family: var(--font-body);
   font-size: 1rem;
-  padding: 0.75rem 1rem;
+  padding: 0.25rem 0 0.75rem;
   outline: none;
-  transition: border-color var(--ease), box-shadow var(--ease), background var(--ease);
+  display: block;
+  min-height: 3.5rem;
+  resize: none;
 }
 
 #search-input::placeholder { color: #8e8e93; }
-#search-input:focus {
-  background: #ffffff;
-  border-color: var(--amber);
-  box-shadow: 0 0 0 3px rgba(255, 180, 84, 0.22);
-}
 
-.search-btn {
-  background: linear-gradient(135deg, #ffb454 0%, #e8932a 100%);
-  border: none;
-  border-radius: var(--radius);
-  color: #fff;
-  cursor: pointer;
-  padding: 0.75rem 1.1rem;
+.search-card-footer {
   display: flex;
   align-items: center;
-  justify-content: center;
-  box-shadow: 0 4px 14px rgba(255, 180, 84, 0.45), inset 0 1px 0 rgba(255,255,255,0.25);
-  transition: opacity var(--ease), transform var(--ease), box-shadow var(--ease);
-  flex-shrink: 0;
+  justify-content: space-between;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  padding-top: 0.7rem;
+  gap: 0.75rem;
 }
-
-.search-btn:hover  { opacity: 0.90; box-shadow: 0 6px 20px rgba(255, 180, 84, 0.60); }
-.search-btn:active { transform: scale(0.96); }
-.search-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 .lang-row {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.5rem;
 }
 
 .lang-row label {
   color: #6e6e73;
-  font-size: 0.84rem;
+  font-size: 0.82rem;
   white-space: nowrap;
 }
 
@@ -302,14 +283,34 @@ main {
   border-radius: 10px;
   color: #1c1c1e;
   font-family: var(--font-body);
-  font-size: 0.875rem;
-  padding: 0.35rem 0.75rem;
+  font-size: 0.82rem;
+  padding: 0.28rem 0.65rem;
   cursor: pointer;
   outline: none;
   transition: border-color var(--ease);
 }
 
 #lang-select:focus { border-color: var(--amber); }
+
+.search-btn {
+  background: linear-gradient(135deg, #ffb454 0%, #e8932a 100%);
+  border: none;
+  border-radius: 50%;
+  color: #fff;
+  cursor: pointer;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 4px 14px rgba(255, 180, 84, 0.45);
+  transition: opacity var(--ease), transform var(--ease), box-shadow var(--ease);
+}
+
+.search-btn:hover  { opacity: 0.90; box-shadow: 0 6px 20px rgba(255, 180, 84, 0.60); }
+.search-btn:active { transform: scale(0.94); }
+.search-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
 
 /* ── Example song chips ── */
 .example-chips {

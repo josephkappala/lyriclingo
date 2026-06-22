@@ -49,33 +49,33 @@
     <section class="search-section">
       <div class="search-card">
         <form id="search-form" role="search">
-          <div class="search-row">
-            <input
-              type="search"
-              id="search-input"
-              placeholder='Try "Despacito", "BTS", "Stromae"…'
-              autocomplete="off"
-              aria-label="Search for a song or artist"
-            />
+          <input
+            type="search"
+            id="search-input"
+            placeholder='Try "Despacito", "BTS", "Stromae"…'
+            autocomplete="off"
+            aria-label="Search for a song or artist"
+          />
+          <div class="search-card-footer">
+            <div class="lang-row">
+              <label for="lang-select">Translate to:</label>
+              <select id="lang-select" aria-label="Translation language">
+                <option value="en">English</option>
+                <option value="es">Spanish</option>
+                <option value="fr">French</option>
+                <option value="de">German</option>
+                <option value="it">Italian</option>
+                <option value="pt">Portuguese</option>
+                <option value="ja">Japanese</option>
+                <option value="ko">Korean</option>
+                <option value="hi">Hindi</option>
+              </select>
+            </div>
             <button type="submit" class="search-btn" aria-label="Search">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
               </svg>
             </button>
-          </div>
-          <div class="lang-row">
-            <label for="lang-select">Translate to:</label>
-            <select id="lang-select" aria-label="Translation language">
-              <option value="en">English</option>
-              <option value="es">Spanish</option>
-              <option value="fr">French</option>
-              <option value="de">German</option>
-              <option value="it">Italian</option>
-              <option value="pt">Portuguese</option>
-              <option value="ja">Japanese</option>
-              <option value="ko">Korean</option>
-              <option value="hi">Hindi</option>
-            </select>
           </div>
         </form>
       </div>

@@ -26,8 +26,8 @@ let playingLine = null;
 
 // ── Utilities ──
 
-function show(el) { el.hidden = false; }
-function hide(el) { el.hidden = true; }
+function show(el) { el.style.display = ''; }
+function hide(el) { el.style.display = 'none'; }
 
 function showError(el, msg) {
   el.textContent = msg;

@@ -54,11 +54,11 @@
       </form>
     </section>
 
-    <section id="results-section" class="results-section" aria-label="Search results" hidden>
+    <section id="results-section" class="results-section" aria-label="Search results" style="display:none">
       <ul id="results-list" role="list"></ul>
     </section>
 
-    <section id="lyrics-section" class="lyrics-section" hidden aria-label="Lyrics">
+    <section id="lyrics-section" class="lyrics-section" style="display:none" aria-label="Lyrics">
       <div class="song-header">
         <button id="back-btn" aria-label="Back to results">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -75,21 +75,21 @@
         </div>
       </div>
       <div id="lyrics-list" class="lyrics-list" role="list"></div>
-      <div id="lyrics-loading" class="loading-state" hidden>
+      <div id="lyrics-loading" class="loading-state" style="display:none">
         <div class="spinner" aria-label="Loading lyrics…"></div>
         <span>Loading lyrics…</span>
       </div>
-      <div id="lyrics-error" class="error-state" hidden></div>
+      <div id="lyrics-error" class="error-state" style="display:none"></div>
     </section>
 
-    <div id="global-loading" class="loading-state" hidden>
+    <div id="global-loading" class="loading-state" style="display:none">
       <div class="spinner"></div>
       <span>Searching…</span>
     </div>
-    <div id="global-error" class="error-state" hidden></div>
+    <div id="global-error" class="error-state" style="display:none"></div>
   </main>
 
-  <div id="audio-indicator" class="audio-indicator" hidden aria-live="polite">
+  <div id="audio-indicator" class="audio-indicator" style="display:none" aria-live="polite">
     <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
       <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/>
     </svg>

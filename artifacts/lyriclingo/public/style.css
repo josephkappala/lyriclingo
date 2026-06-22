@@ -378,10 +378,10 @@ main {
 }
 
 .feature-card {
-  background: rgba(255, 255, 255, 0.05);
+  background: rgba(8, 14, 38, 0.72);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
-  border: 1px solid rgba(255, 255, 255, 0.10);
+  border: 1px solid rgba(255, 255, 255, 0.13);
   border-radius: var(--radius-lg);
   box-shadow: var(--card-shadow);
   padding: 1.3rem 1.1rem;
@@ -390,8 +390,8 @@ main {
 
 .feature-card:hover {
   transform: translateY(-2px);
-  background: rgba(255, 255, 255, 0.08);
-  box-shadow: 0 12px 36px rgba(0,0,0,0.45), 0 3px 10px rgba(0,0,0,0.25), inset 0 1px 0 rgba(255,255,255,0.12);
+  background: rgba(8, 14, 38, 0.82);
+  box-shadow: 0 12px 36px rgba(0,0,0,0.55), 0 3px 10px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.12);
 }
 
 .feature-icon {
@@ -410,13 +410,13 @@ main {
 .feature-title {
   font-size: 0.88rem;
   font-weight: 600;
-  color: var(--text);
+  color: #ffffff;
   margin-bottom: 0.35rem;
 }
 
 .feature-desc {
   font-size: 0.78rem;
-  color: var(--muted);
+  color: rgba(200, 210, 240, 0.85);
   line-height: 1.55;
 }
 

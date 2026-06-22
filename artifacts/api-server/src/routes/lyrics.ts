@@ -143,7 +143,7 @@ router.post("/translate", async (req, res) => {
     fallbackLines.push(...safeLines);
     const safeLang = String(lang).toLowerCase().trim();
 
-    if (safeLines.length === 0 || !safeLang || safeLang === "en") {
+    if (safeLines.length === 0 || !safeLang) {
       res.json({ lines: safeLines });
       return;
     }

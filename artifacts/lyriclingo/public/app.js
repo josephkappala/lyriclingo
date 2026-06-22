@@ -125,7 +125,7 @@ async function loadLyrics(track) {
     // Use Musixmatch translation if /api/lyrics already found one;
     // otherwise call /api/translate for the keyless fallback.
     let translationLines = lyricsData.translationLines || [];
-    if (translationLines.length === 0 && lang && lang !== 'en') {
+    if (translationLines.length === 0 && lang) {
       try {
         const tRes = await fetch(`${BASE}/translate`, {
           method: 'POST',

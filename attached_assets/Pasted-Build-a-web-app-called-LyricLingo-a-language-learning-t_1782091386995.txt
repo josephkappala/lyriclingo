@@ -1,0 +1,30 @@
+Build a web app called "LyricLingo" — a language-learning tool that shows song lyrics with line-by-line translation, where tapping any line plays it aloud.
+
+STACK (keep it simple, no build step):
+- Backend: Node + Express, ES modules, Node 18+ global fetch (no node-fetch).
+- Frontend: a single static page (public/index.html, public/style.css, public/app.js) — plain vanilla JS, no React, no bundler.
+- Only dependency: express.
+- The backend is a thin proxy so API keys NEVER reach the browser and to avoid CORS.
+
+SECRETS (read from process.env, never hardcode):
+- MUSIXMATCH_API_KEY
+- ELEVENLABS_API_KEY
+- MUSIXMATCH_BASE (optional, default "https://api.musixmatch.com/ws/1.1")
+
+BACKEND ROUTES:
+- GET /api/health -> { musixmatch: bool, elevenlabs: bool } (true if each key is set)
+- GET /api/search?q= -> Musixmatch "track.search" with q_track_artist=q, f_has_lyrics=1, s_track_rating=desc, page_size=8. Return [{id,title,artist,cover}].
+- GET /api/lyrics?track_id= -> try "track.subtitle.get" first for time-synced lines (subtitle_body is a JSON string: array of {text, time:{total}}); if unavailable, fall back to "track.lyrics.get" and split lyrics_body into lines, dropping the Musixmatch tracking disclaimer lines. Return { synced: bool, lines: [{text, t}] }.
+- GET /api/translate?track_id=&lang= -> Musixmatch "track.lyrics.translation.get" with selected_language=lang. Build a map of original-line -> translated-line. If translation isn't available on the key, return an empty map gracefully (HTTP 200), don't crash.
+- POST /api/tts {text} -> ElevenLabs text-to-speech, model_id "eleven_multilingual_v2", return audio/mpeg bytes.
+
+All Musixmatch calls append format=json and apikey=MUSIXMATCH_API_KEY as query params, and check message.header.status_code.
+
+FRONTEND:
+- A search box + a "translate to" language dropdown (en, es, fr, de, it, pt, ja, ko, hi).
+- Search results as a tappable list (cover thumbnail + title + artist).
+- Selecting a song shows lyrics as paired bilingual lines: original on top, translation beneath in lighter italic.
+- Tapping any line POSTs to /api/tts and plays the returned audio; highlight the active line.
+- Dark "stage" theme, warm amber accent (#ffb454), Fraunces for the title + Inter for body via Google Fonts. Mobile-responsive, visible focus states, respects prefers-reduced-motion.
+
+Deploy so it has a public URL. Add a README explaining what it does and which Musixmatch endpoints it uses.

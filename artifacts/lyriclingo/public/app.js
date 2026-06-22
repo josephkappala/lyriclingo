@@ -15,6 +15,7 @@ const lyricsError = document.getElementById('lyrics-error');
 const globalLoading = document.getElementById('global-loading');
 const globalError = document.getElementById('global-error');
 const backBtn = document.getElementById('back-btn');
+const playAllBtn = document.getElementById('play-all-btn');
 const songCover = document.getElementById('song-cover');
 const songTitle = document.getElementById('song-title');
 const songArtist = document.getElementById('song-artist');
@@ -23,6 +24,12 @@ const audioIndicator = document.getElementById('audio-indicator');
 let currentAudio = null;
 let currentTrack = null;
 let playingLine = null;
+
+// ── Play All state ──
+let lineEls = [];        // { el, text }[] — repopulated on each renderLyrics
+let playAllSession = 0;  // incremented on every start/stop to cancel orphaned chains
+let playAllActive = false;
+let playAllResolve = null; // lets stopAudio() unblock a mid-playback await
 
 // ── Utilities ──
 
@@ -102,7 +109,7 @@ function renderResults(tracks) {
 // ── Lyrics ──
 
 async function loadLyrics(track) {
-  stopAudio();
+  stopAudio(); // also resets Play All if active
   currentTrack = track;
 
   songCover.src = track.cover || '';
@@ -112,6 +119,7 @@ async function loadLyrics(track) {
 
   hide(resultsSection);
   lyricsList.innerHTML = '';
+  lineEls = [];
   hide(lyricsError);
   show(lyricsLoading);
   show(lyricsSection);
@@ -160,6 +168,7 @@ langSelect.addEventListener('change', () => {
 
 function renderLyrics(origLines, transLines, synced) {
   lyricsList.innerHTML = '';
+  lineEls = [];
 
   if (!origLines.length) {
     showError(lyricsError, 'No lyrics available for this track.');
@@ -200,6 +209,7 @@ function renderLyrics(origLines, transLines, synced) {
     });
 
     lyricsList.appendChild(div);
+    lineEls.push({ el: div, text: line.text });
   });
 }
 
@@ -266,6 +276,149 @@ function stopAudio() {
     playingLine = null;
   }
   hide(audioIndicator);
+  // Unblock any mid-playback await in playLineForChain
+  if (playAllResolve) {
+    const resolve = playAllResolve;
+    playAllResolve = null;
+    resolve();
+  }
+  // Cancel the Play All chain and reset button
+  if (playAllActive) {
+    playAllSession++;
+    playAllActive = false;
+    setPlayAllBtn(false);
+  }
+}
+
+// ── Play All ──
+
+function setPlayAllBtn(active) {
+  if (active) {
+    playAllBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <rect x="6" y="6" width="12" height="12"/>
+      </svg>
+      Stop
+    `;
+    playAllBtn.classList.add('playing');
+    playAllBtn.setAttribute('aria-label', 'Stop playback');
+  } else {
+    playAllBtn.innerHTML = `
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+        <path d="M8 5v14l11-7z"/>
+      </svg>
+      Play All
+    `;
+    playAllBtn.classList.remove('playing');
+    playAllBtn.setAttribute('aria-label', 'Play all lines aloud');
+  }
+}
+
+playAllBtn.addEventListener('click', () => {
+  if (playAllActive) {
+    stopAudio(); // stopAudio handles the reset
+  } else {
+    playAll();
+  }
+});
+
+async function playAll() {
+  if (!lineEls.length) return;
+
+  stopAudio();           // clear any single-line playback first
+  playAllActive = true;
+  playAllSession++;
+  const session = playAllSession;
+  setPlayAllBtn(true);
+
+  for (let i = 0; i < lineEls.length; i++) {
+    if (playAllSession !== session) break;
+
+    const { el, text } = lineEls[i];
+    el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+
+    await playLineForChain(el, text, session);
+
+    if (playAllSession !== session) break;
+  }
+
+  // Only reset if no newer session has taken over
+  if (playAllSession === session) {
+    playAllActive = false;
+    setPlayAllBtn(false);
+  }
+}
+
+async function playLineForChain(el, text, session) {
+  if (playAllSession !== session) return;
+
+  playingLine = el;
+  el.classList.add('active');
+  show(audioIndicator);
+
+  let res;
+  try {
+    res = await fetch(`${BASE}/tts`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+  } catch {
+    el.classList.remove('active');
+    if (playingLine === el) { playingLine = null; hide(audioIndicator); }
+    return;
+  }
+
+  if (playAllSession !== session || !res.ok) {
+    el.classList.remove('active');
+    if (playingLine === el) { playingLine = null; hide(audioIndicator); }
+    return;
+  }
+
+  let blob;
+  try {
+    blob = await res.blob();
+  } catch {
+    el.classList.remove('active');
+    if (playingLine === el) { playingLine = null; hide(audioIndicator); }
+    return;
+  }
+
+  if (playAllSession !== session) {
+    el.classList.remove('active');
+    if (playingLine === el) { playingLine = null; hide(audioIndicator); }
+    return;
+  }
+
+  const url = URL.createObjectURL(blob);
+  const audio = new Audio(url);
+  currentAudio = audio;
+  el.classList.add('playing');
+
+  await new Promise((resolve) => {
+    playAllResolve = resolve;
+
+    audio.addEventListener('ended', () => {
+      playAllResolve = null;
+      resolve();
+    });
+    audio.addEventListener('error', () => {
+      playAllResolve = null;
+      resolve();
+    });
+    audio.play().catch(() => {
+      playAllResolve = null;
+      resolve();
+    });
+  });
+
+  el.classList.remove('playing', 'active');
+  if (playingLine === el) playingLine = null;
+  if (currentAudio === audio) {
+    currentAudio = null;
+    hide(audioIndicator);
+  }
+  URL.revokeObjectURL(url);
 }
 
 // ── Back button ──

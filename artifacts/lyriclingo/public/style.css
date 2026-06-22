@@ -200,6 +200,13 @@ main {
   margin-bottom: 1.5rem;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
 #back-btn {
   background: none;
   border: 1.5px solid var(--border);
@@ -213,11 +220,34 @@ main {
   font-size: 0.85rem;
   padding: 0.4rem 0.85rem;
   transition: color var(--transition), border-color var(--transition);
-  align-self: flex-start;
 }
 
 #back-btn:hover { color: var(--amber); border-color: var(--amber); }
 #back-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+#play-all-btn {
+  background: none;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--muted);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-family: var(--font-body);
+  font-size: 0.85rem;
+  padding: 0.4rem 0.85rem;
+  transition: color var(--transition), border-color var(--transition), background var(--transition);
+}
+
+#play-all-btn:hover { color: var(--amber); border-color: var(--amber); }
+#play-all-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+#play-all-btn.playing {
+  color: var(--amber);
+  border-color: var(--amber-dim);
+  background: color-mix(in srgb, var(--amber) 10%, transparent);
+}
 
 .song-meta {
   display: flex;

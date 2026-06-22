@@ -26,11 +26,14 @@ const songCover         = document.getElementById('song-cover');
 const songTitle         = document.getElementById('song-title');
 const songArtist        = document.getElementById('song-artist');
 const audioIndicator    = document.getElementById('audio-indicator');
+const speed1xBtn        = document.getElementById('speed-1x-btn');
+const speed07xBtn       = document.getElementById('speed-07x-btn');
 
 // ── State ──
 let currentAudio    = null;
 let currentTrack    = null;
 let playingLine     = null;
+let playbackRate    = 1.0;
 
 // Play All
 let lineEls         = [];
@@ -73,6 +76,22 @@ function showHome() {
 }
 
 navLogoBtn.addEventListener('click', showHome);
+
+// ── Playback speed ──
+
+function setSpeed(rate) {
+  playbackRate = rate;
+  const is1x = rate === 1.0;
+  speed1xBtn.classList.toggle('active', is1x);
+  speed1xBtn.setAttribute('aria-pressed', String(is1x));
+  speed07xBtn.classList.toggle('active', !is1x);
+  speed07xBtn.setAttribute('aria-pressed', String(!is1x));
+  // Apply immediately if something is already playing
+  if (currentAudio) currentAudio.playbackRate = rate;
+}
+
+speed1xBtn.addEventListener('click',  () => setSpeed(1.0));
+speed07xBtn.addEventListener('click', () => setSpeed(0.7));
 
 // ── Search ──
 
@@ -302,6 +321,7 @@ async function playLine(el, text) {
     const blob = await res.blob();
     const url  = URL.createObjectURL(blob);
     currentAudio = new Audio(url);
+    currentAudio.playbackRate = playbackRate;
     el.classList.add('playing');
 
     currentAudio.addEventListener('ended', () => {
@@ -444,6 +464,7 @@ async function playLineForChain(el, text, session) {
 
   const url   = URL.createObjectURL(blob);
   const audio = new Audio(url);
+  audio.playbackRate = playbackRate;
   currentAudio = audio;
   el.classList.add('playing');
 

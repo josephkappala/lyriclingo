@@ -542,6 +542,39 @@ main {
   color: var(--amber-dark);
 }
 
+/* ── Speed toggle (iOS segmented control) ── */
+.speed-toggle {
+  display: inline-flex;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  border-radius: 100px;
+  padding: 2px;
+  gap: 2px;
+}
+
+.speed-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: var(--muted);
+  padding: 0.22rem 0.7rem;
+  border-radius: 100px;
+  transition: background var(--ease), color var(--ease), box-shadow var(--ease);
+  line-height: 1.4;
+}
+
+.speed-btn:hover:not(.active) { color: var(--text-sec); }
+.speed-btn:focus-visible { outline: 2px solid var(--amber); outline-offset: 2px; }
+
+.speed-btn.active {
+  background: rgba(255, 255, 255, 0.92);
+  color: var(--amber-dark);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12), inset 0 1px 0 rgba(255, 255, 255, 0.95);
+}
+
 .song-meta {
   display: flex;
   align-items: center;

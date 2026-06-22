@@ -23,7 +23,6 @@ const audioIndicator = document.getElementById('audio-indicator');
 let currentAudio = null;
 let currentTrack = null;
 let playingLine = null;
-let currentOrigLines = [];  // cache for re-translation on lang change
 
 // ── Utilities ──
 
@@ -105,7 +104,6 @@ function renderResults(tracks) {
 async function loadLyrics(track) {
   stopAudio();
   currentTrack = track;
-  currentOrigLines = [];
 
   songCover.src = track.cover || '';
   songCover.style.display = track.cover ? '' : 'none';
@@ -119,54 +117,34 @@ async function loadLyrics(track) {
   show(lyricsSection);
 
   try {
-    const lyricsData = await apiFetch(`/lyrics?track_id=${track.id}`);
-    currentOrigLines = lyricsData.lines || [];
-
-    const translationLines = await translateLines(currentOrigLines.map((l) => l.text));
-
+    const lang = langSelect.value;
+    const lyricsData = await apiFetch(
+      `/lyrics?track_id=${track.id}&lang=${encodeURIComponent(lang)}`
+    );
     hide(lyricsLoading);
-    renderLyrics(currentOrigLines, translationLines, lyricsData.synced);
+    renderLyrics(lyricsData.lines, lyricsData.translationLines || [], lyricsData.synced);
   } catch (err) {
     hide(lyricsLoading);
     showError(lyricsError, `Could not load lyrics: ${err.message}`);
   }
 }
 
-async function translateLines(texts) {
-  const lang = langSelect.value;
-  if (!texts.length || !lang || lang === 'en') return [];
-  try {
-    const tRes = await fetch(`${BASE}/translate`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ lines: texts, to: lang }),
-    });
-    if (tRes.ok) {
-      const tData = await tRes.json();
-      return tData.lines || [];
-    }
-  } catch { /* fall through */ }
-  return [];
-}
-
-// Re-translate when language changes while lyrics are visible
-langSelect.addEventListener('change', async () => {
-  if (!currentOrigLines.length || lyricsSection.style.display === 'none') return;
-  const translationLines = await translateLines(currentOrigLines.map((l) => l.text));
-  const synced = lyricsList.dataset.synced === 'true';
-  renderLyrics(currentOrigLines, translationLines, synced);
+// Re-fetch with new language when dropdown changes (lyrics already open)
+langSelect.addEventListener('change', () => {
+  if (currentTrack && lyricsSection.style.display !== 'none') {
+    loadLyrics(currentTrack);
+  }
 });
 
 function renderLyrics(origLines, transLines, synced) {
   lyricsList.innerHTML = '';
-  lyricsList.dataset.synced = String(Boolean(synced));
 
   if (!origLines.length) {
     showError(lyricsError, 'No lyrics available for this track.');
     return;
   }
 
-  // Synced badge
+  // Time-synced badge
   if (synced) {
     const badge = document.createElement('div');
     badge.className = 'synced-badge';
@@ -185,23 +163,15 @@ function renderLyrics(origLines, transLines, synced) {
     div.className = 'lyric-line';
     div.setAttribute('role', 'listitem');
     div.tabIndex = 0;
-
-    const hasTranslation = Boolean(translation && translation !== line.text);
-    div.title = hasTranslation
-      ? 'Click to hear the translation spoken aloud'
-      : 'Click to hear this line';
+    div.title = 'Click to hear this line';
 
     div.innerHTML = `
       <div class="lyric-original">${escHtml(line.text)}</div>
-      ${hasTranslation ? `<div class="lyric-translation">
-        <span class="lyric-translation-text">${escHtml(translation)}</span>
-        <span class="play-hint" aria-hidden="true">▶</span>
-      </div>` : ''}
+      ${translation ? `<div class="lyric-translation">${escHtml(translation)}</div>` : ''}
     `;
 
-    // Speak translation if available, otherwise speak original
-    const textToSpeak = hasTranslation ? translation : line.text;
-    const playThis = () => playLine(div, textToSpeak);
+    // Always speak the original line via ElevenLabs
+    const playThis = () => playLine(div, line.text);
     div.addEventListener('click', playThis);
     div.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playThis(); }
@@ -211,7 +181,7 @@ function renderLyrics(origLines, transLines, synced) {
   });
 }
 
-// ── TTS / Audio ──
+// ── TTS / Audio (ElevenLabs) ──
 
 async function playLine(el, text) {
   if (playingLine === el && currentAudio && !currentAudio.paused) {

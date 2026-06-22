@@ -185,14 +185,23 @@ function renderLyrics(origLines, transLines, synced) {
     div.className = 'lyric-line';
     div.setAttribute('role', 'listitem');
     div.tabIndex = 0;
-    div.title = 'Click to hear this line';
+
+    const hasTranslation = Boolean(translation && translation !== line.text);
+    div.title = hasTranslation
+      ? 'Click to hear the translation spoken aloud'
+      : 'Click to hear this line';
 
     div.innerHTML = `
       <div class="lyric-original">${escHtml(line.text)}</div>
-      ${translation ? `<div class="lyric-translation">${escHtml(translation)}</div>` : ''}
+      ${hasTranslation ? `<div class="lyric-translation">
+        <span class="lyric-translation-text">${escHtml(translation)}</span>
+        <span class="play-hint" aria-hidden="true">▶</span>
+      </div>` : ''}
     `;
 
-    const playThis = () => playLine(div, line.text);
+    // Speak translation if available, otherwise speak original
+    const textToSpeak = hasTranslation ? translation : line.text;
+    const playThis = () => playLine(div, textToSpeak);
     div.addEventListener('click', playThis);
     div.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); playThis(); }
